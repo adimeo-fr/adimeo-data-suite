@@ -13,6 +13,15 @@ use Symfony\Component\HttpFoundation\Response;
 class SearchAPIController extends AdimeoDataSuiteController
 {
 
+  private $applyBoostingByDefault;
+  private $collectStats;
+
+  public function __construct($applyBoostingByDefault = false, $collectStats = false)
+  {
+    $this->applyBoostingByDefault = $applyBoostingByDefault;
+    $this->collectStats = $collectStats;
+  }
+
   public function searchAPIV2Action(Request $request)
   {
     if ($request->get('mapping') != null) {
@@ -43,7 +52,7 @@ class SearchAPIController extends AdimeoDataSuiteController
           $mapping = $this->getIndexManager()->getMapping($indexName, $mappingName);
           $cache->set('ads_search_' . $request->get('mapping'), $mapping);
         }
-        $definition = $mapping['properties'];
+        $definition = is_array($mapping['properties']) ? $mapping['properties'] : [];
         $analyzed_fields = array();
         $nested_analyzed_fields = array();
         $stickyFacets = $request->get('sticky_facets') != NULL ? array_map('trim', explode(',', $request->get('sticky_facets'))) : [];
@@ -65,7 +74,16 @@ class SearchAPIController extends AdimeoDataSuiteController
             } elseif ($field_detail['type'] == 'nested') {
               foreach ($field_detail['properties'] as $sub_field => $sub_field_detail) {
                 if ((!isset($sub_field_detail['index']) || $sub_field_detail['index'] == 'analyzed') && ($sub_field_detail['type'] == 'string' || !$isLegacy && $sub_field_detail['type'] == 'text')) {
-                  $nested_analyzed_fields[] = $field . '.' . $sub_field;
+                  if(isset($field_detail['include_in_parent']) && $field_detail['include_in_parent']) {
+                    $nestedField = $field . '.' . $sub_field;
+                    if (isset($sub_field_detail['boost'])) {
+                      $nestedField .= '^' . $sub_field_detail['boost'];
+                    }
+                    $analyzed_fields[] = $nestedField;
+                  }
+                  else {
+                    $nested_analyzed_fields[] = $field . '.' . $sub_field;
+                  }
                 }
               }
             }
@@ -78,6 +96,8 @@ class SearchAPIController extends AdimeoDataSuiteController
           $query_string = str_replace(':', '\:', $query_string);
           $query_string = str_replace('!', '\!', $query_string);
           $query_string = str_replace('?', '\?', $query_string);
+          $query_string = str_replace('/', '\\', $query_string);
+          $query_string = str_replace('+', '\+', $query_string);
         }
 
         if (count($nested_analyzed_fields) > 0) {
@@ -111,7 +131,7 @@ class SearchAPIController extends AdimeoDataSuiteController
 
         $applied_facets = array();
         $refactor_for_boolean_query = FALSE;
-        if ($request->get('filter') != null) {
+        if (is_array($request->get('filter'))) {
           $filters = array();
           foreach ($request->get('filter') as $filter) {
             preg_match('/(?P<name>[^!=><]*)(?P<operator>[!=><]+)"(?P<value>[^"]*)"/', $filter, $matches);
@@ -282,6 +302,7 @@ class SearchAPIController extends AdimeoDataSuiteController
               $facet_parts = explode('.', $facet);
               if (count($facet_parts) == 3 && $facet_parts[2] == 'raw') {
                 $query['aggs'][$facet]['nested']['path'] = $facet_parts[0];
+                $query['aggs'][$facet]['aggs'][$facet]['aggs']['parent_count']['reverse_nested'] = [];
                 $query['aggs'][$facet]['aggs'][$facet]['terms'] = array(
                   'field' => $facet
                 );
@@ -291,6 +312,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 );
               } elseif (count($facet_parts) == 2) {
                 $query['aggs'][$facet]['nested']['path'] = $facet_parts[0];
+                $query['aggs'][$facet]['aggs'][$facet]['aggs']['parent_count']['reverse_nested'] = [];
                 $query['aggs'][$facet]['aggs'][$facet]['terms'] = array(
                   'field' => $facet
                 );
@@ -353,11 +375,44 @@ class SearchAPIController extends AdimeoDataSuiteController
 
 
         if ($request->get('sort') != null && count(explode(',', $request->get('sort'))) == 2) {
-          $query['sort'] = array(
-            explode(',', $request->get('sort'))[0] => array(
-              'order' => strtolower(explode(',', $request->get('sort'))[1])
+          $field_parts = explode('.', explode(',', $request->get('sort'))[0]);
+          if(count($field_parts) <= 1 || $mapping['properties'][$field_parts[0]]['type'] != 'nested') {
+            $query['sort'] = array(
+              explode(',', $request->get('sort'))[0] => array(
+                'order' => strtolower(explode(',', $request->get('sort'))[1])
+              )
+            );
+          }
+          else {
+            $query['sort'] = array(
+              explode(',', $request->get('sort'))[0] => array(
+                'order' => explode(',', $request->get('sort'))[1],
+                'nested_path' => $field_parts[0]
+              )
+            );
+          }
+        }
+        if ($request->get('sort') != null && count(explode(',', $request->get('sort'))) == 5 && explode(',', $request->get('sort'))[1] == 'geo_distance') {
+          $field = explode(',', $request->get('sort'))[0];
+          $lat = explode(',', $request->get('sort'))[2];
+          $lon = explode(',', $request->get('sort'))[3];
+          $order = explode(',', $request->get('sort'))[4];
+          $sorting = array(
+            '_geo_distance' => array(
+              $field => array(
+                'lat' => $lat,
+                'lon' => $lon,
+              ),
+              'order' => $order,
+              'unit' => 'km',
+              'distance_type' => 'plane'
             )
           );
+          $field_parts = explode('.', $field);
+          if(count($field_parts) > 1 && $mapping['properties'][$field_parts[0]]['type'] == 'nested') {
+            $sorting['_geo_distance']['nested_path'] = $field_parts[0];
+          }
+          $query['sort'] = [$sorting];
         }
 
         if ($request->get('highlights') != null) {
@@ -387,7 +442,7 @@ class SearchAPIController extends AdimeoDataSuiteController
           }
         }
 
-        if($request->get('apply_boosting') == 1){
+        if($request->get('apply_boosting') == 1 || $this->applyBoostingByDefault){
           /** @var BoostQuery[] $boostQueries */
           $boostQueries = $this->getIndexManager()->listObjects('boost_query', NULL, 0, 10000, 'asc', array(
             'tags' => 'index_name=' . $indexName
@@ -396,11 +451,19 @@ class SearchAPIController extends AdimeoDataSuiteController
             $query['query']['bool']['should'][] = json_decode($boostQuery->getDefinition(), true);
           }
         }
+
+        if($request->get('exclude_fields') != null) {
+          $query['_source']['excludes'] = array_map('trim', explode(',', $request->get('exclude_fields')));
+        }
+        if($request->get('include_fields') != null) {
+          $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
+        }
+
         try {
           $res = $this->getIndexManager()->search($indexName, $query, $request->get('from') != null ? $request->get('from') : 0, $request->get('size') != null ? $request->get('size') : 10, $mappingName);
 
           //Stat part
-          if($request->get('escapeQuery') == null || $request->get('escapeQuery') == 1) {
+          if($this->collectStats && ($request->get('escapeQuery') == null || $request->get('escapeQuery') == 1)) {
             $text = $request->get('query') != null ? $request->get('query') : '';
             $analyzer = $request->get('analyzer');
             $statKeywords = [];
@@ -423,16 +486,26 @@ class SearchAPIController extends AdimeoDataSuiteController
                 }
               }
             }
+            $statHits = [];
+            if(isset($res['hits']['hits'])) {
+              foreach ($res['hits']['hits'] as $hit) {
+                if(isset($hit['_id'])) {
+                  $statHits[] = $hit['_id'];
+                }
+              }
+            }
             $this->getStatIndexManager()->saveStat(
               $request->get('mapping'),
               $applied_facets,
+              $text,
               $statKeywords,
               $rawStatKeywords,
               $request->getQueryString(),
               isset($res['hits']['total']) ? $res['hits']['total'] : 0,
               isset($res['took']) ? $res['took'] : 0,
               $request->get('clientIp') != null ? $request->get('clientIp') : $request->getClientIp(),
-              $request->get('tag') != null ? $request->get('tag') : ''
+              $request->get('tag') != null ? $request->get('tag') : '',
+              $statHits
             );
           }
 
@@ -625,7 +698,12 @@ class SearchAPIController extends AdimeoDataSuiteController
     $field = $request->get('field');
     $group = $request->get('group');
     $text = $request->get('text');
-    $text = $this->transliterate($text);
+    try {
+      $text = $this->transliterate($text);
+    }
+    catch(\Exception $e) {
+      return new Response('{"error": "'.$e->getMessage().'"}', 400, array('Content-type' => 'application/json;charset=utf-8'));
+    }
     $size = $request->get('size') != null ? (int)$request->get('size') : 20;
     $sizePerGroup = $request->get('size_per_group') != null ? (int)$request->get('size_per_group') : 10;
     $words = explode(' ', $text);
@@ -686,6 +764,7 @@ class SearchAPIController extends AdimeoDataSuiteController
         'size' => $size
       );
     }
+
     if($request->get('filterQuerystring') != null){
       $body['query']['bool']['must'][] = array(
         'query_string' => array(
@@ -724,10 +803,24 @@ class SearchAPIController extends AdimeoDataSuiteController
     return new Response(json_encode($ret, JSON_PRETTY_PRINT), 200, array('Content-type' => 'application/json; charset=utf8', 'Access-Control-Allow-Origin' => '*'));
   }
 
-  private function transliterate($str){
+  /**
+   * @param $str
+   * @return string
+   * @throws \Exception
+   */
+  private function transliterate($str)
+  {
     $chars = array("aàáâãäåāąă","AÀÁÂÃÄÅĀĄĂ","cçćč","CÇĆČ","dđď","DĐĎ","eèéêëěēę","EÈÉÊËĚĒĘ","iìíîïī","IÌÍÎÏĪ","lł","LŁ","nñňń","NÑŇŃ","oòóôõöøō","OÒÓÔÕÖØŌ","rř","RŘ","sšśș","SŠŚȘ","tťț","TŤȚ","uùúûüůū","UÙÚÛÜŮŪ","yÿý","YŸÝ","zžżź","ZŽŻŹ");
     $str_c = preg_split('/(?<!^)(?!$)/u', $str );
     $out = '';
+
+    if(is_array($str_c)) {
+      $str_c = array_filter($str_c);
+    }
+    else {
+      throw new \Exception("Cannot transliterate the following text: ".$str);
+    }
+
     foreach($str_c as $c){
       $repl = false;
       foreach($chars as $char_seq){

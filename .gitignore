@@ -1,6 +1,6 @@
 .idea/
-composer.lock
-symfony.lock
+config/bootstrap.php
+config/packages/cache.yaml
 
 ###> symfony/framework-bundle ###
 /.env
