@@ -9,7 +9,7 @@ services:
             - adimeo-net
         labels:
             - "traefik.enable=true"
-            - "traefik.http.routers.ads.rule=Host(`ads-apm.dev.local`)"
+            - "traefik.http.routers.ads.rule=Host(`ads.dev.local`)"
             - "traefik.http.routers.ads.tls=true"
         volumes:
             - ".:/app"
