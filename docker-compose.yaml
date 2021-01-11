@@ -1,12 +1,12 @@
 version: '3'
 services:
     ads:
-        build: .
+        image: adimeotech/adimeo-data-suite:5.6
         container_name: ads
         environment:
             COMPOSER_VERSION: 1
         networks:
-            - proxy
+            - adimeo-net
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.ads.rule=Host(`ads-apm.dev.local`)"
@@ -23,11 +23,11 @@ services:
             - network.host=0.0.0.0
             - discovery.seed_hosts=0.0.0.0
         networks:
-            - proxy
+            - adimeo-net
 
 volumes:
     ads_data:
 
 networks:
-    proxy:
+    adimeo-net:
         external: true
