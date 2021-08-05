@@ -1,19 +1,23 @@
-version: '3'
+version: '3.7'
 services:
-    ads:
-        image: adimeotech/adimeo-data-suite:5.6
-        container_name: ads
-        environment:
-            COMPOSER_VERSION: 1
+    web:
+        image: adimeotech/adimeo-data-suite:elk5.6_php8.0
+        container_name: ads_web
         networks:
-            - adimeo-net
+            - adimeo_local_proxy
         labels:
-            - "traefik.enable=true"
-            - "traefik.http.routers.ads.rule=Host(`ads.dev.local`)"
-            - "traefik.http.routers.ads.tls=true"
+            - 'traefik.http.routers.ads.entrypoints=http'
+            - 'traefik.http.routers.ads.rule=Host(`ads.dev.local`)'
+            - 'traefik.http.middlewares.ads-https-redirect.redirectscheme.scheme=https'
+            - 'traefik.http.routers.ads.middlewares=ads-https-redirect'
+            - 'traefik.http.routers.ads-secure.entrypoints=https'
+            - 'traefik.http.routers.ads-secure.rule=Host(`ads.dev.local`)'
+            - 'traefik.http.routers.ads-secure.tls=true'
+            - 'traefik.docker.network=adimeo_local_proxy'
         volumes:
-            - ".:/app"
-    ads_elk:
+            - ".:/var/www/html"
+            - ./.docker/config/dev/php/conf.d/xdebug.ini:/usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+    elk:
         image: elasticsearch:5
         container_name: ads_elk
         volumes:
@@ -23,11 +27,11 @@ services:
             - network.host=0.0.0.0
             - discovery.seed_hosts=0.0.0.0
         networks:
-            - adimeo-net
+            - adimeo_local_proxy
 
 volumes:
     ads_data:
 
 networks:
-    adimeo-net:
+    adimeo_local_proxy:
         external: true
