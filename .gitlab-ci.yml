@@ -1,0 +1,52 @@
+image:
+  name: artifacts.saint-gobain.net/eai-000-docker-public-local/php:8.1.3
+  entrypoint: [""]
+
+build_composer:
+  stage: build
+  artifacts:
+    name: "$CI_PROJECT_NAME"
+    paths:
+      - ./*
+    expire_in: 5 days
+  tags:
+    - website_node
+  script:
+    - echo  "==== STARTING build JOB ===="
+    - export http_proxy=http://"$CLN_PROXY"
+    - export https_proxy=http://"$CLN_PROXY"
+    - export APP_ENV=prod
+    - echo  "==== Get composer ===="
+    - curl -x "$CLN_PROXY" -o composer-setup.php https://getcomposer.org/installer
+    #- php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+    - php -r "if (hash_file('sha384', 'composer-setup.php') === '906a84df04cea2aa72f40b5f787e49f22d4c2f19492ac310e8cba5b96ac8b64115ac402c8cd292b8a03482574915d1a8') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+    - php composer-setup.php
+    - php -r "unlink('composer-setup.php');"
+    - php composer.phar --version
+    - echo  "==== Get build tools  ===="
+    - apt-get update && apt-get -y install unzip zip git 
+    - echo  "==== Get dependencies ===="
+    - php composer.phar install --ignore-platform-reqs  --no-dev --optimize-autoloader
+    - echo  "==== Remove working files ===="
+    - rm -rf .git*
+    - rm composer.phar
+    - echo  "==== Dir content ===="
+    - ls -al
+    - echo  "==== END OF build JOB ===="
+  only:
+    - master
+
+deploy_jfrog:
+  stage: deploy
+  tags:
+    - website_node
+  script:
+    - echo  "==== STARTING deploy JOB ===="
+    - num=$(( "$CI_JOB_ID" - 1 ))
+    - echo  "==== Get the $num artifact ===="
+    - 'curl --location --output "$CI_PROJECT_NAME".zip --header "JOB-TOKEN: $CI_JOB_TOKEN" "$CI_API_V4_URL/projects/5/jobs/$num/artifacts"'
+    - echo  "==== Push artifact on $JFROG_REPO_COMPOSER repo ===="
+    - curl -k -H "X-JFrog-Art-Api:$JFROG_API_KEY" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/ -T "$CI_PROJECT_NAME".zip
+    - echo  "==== END OF deploy JOB ===="
+  only:
+    - master
