@@ -44,8 +44,15 @@ build_composer:
     - echo  "==== Make .env file ===="
     - cp .env.dist .env
     - sed -i 's;ELASTICSEARCH_SERVER_URL=http://localhost:9200;ELASTICSEARCH_SERVER_URL=<elasticsearch_url>;g' .env
-    - sed -i 's;STAT_ELASTICSEARCH_SERVER_URL=http://localhost:9200;STAT_ELASTICSEARCH_SERVER_URL=<stat_elasticsearch_url>;g' .env
-    - sed -i 's;RECO_ELASTICSEARCH_SERVER_URL=http://localhost:9200;RECO_ELASTICSEARCH_SERVER_URL=<reco_elasticsearch_url>;g' .env
+    - sed -i 's;STAT_ELASTICSEARCH_SERVER_URL=http://localhost:9200;STAT_ELASTICSEARCH_SERVER_URL=<elasticsearch_url>;g' .env
+    - sed -i 's;RECO_ELASTICSEARCH_SERVER_URL=http://localhost:9200;RECO_ELASTICSEARCH_SERVER_URL=<elasticsearch_url>;g' .env
+    - sed -i 's;ADS_INDEX_NB_REPLICAS=0;ADS_INDEX_NB_REPLICAS=1;g' .env
+    - sed -i 's;ADS_STAT_INDEX_NB_REPLICAS=0;ADS_STAT_INDEX_NB_REPLICAS=1;g' .env
+    - sed -i 's;ADS_RECO_INDEX_NB_REPLICAS=0;ADS_RECO_INDEX_NB_REPLICAS=1;g' .env
+    - sed -i 's;MAX_REPLICAS=0;MAX_REPLICAS=1;g' .env
+    - sed -i 's;ADS_API_APPLY_BOOSTING=0;ADS_API_APPLY_BOOSTING=1;g' .env
+    - sed -i 's;IS_LEGACY=0;IS_LEGACY=1;g' .env
+    - sed -i 's;COLLECT_STATS=1;COLLECT_STATS=0;g' .env
     - echo  "==== Dir content ===="
     - ls -alh
     - ls -alh vendor
