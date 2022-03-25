@@ -39,14 +39,20 @@ build_composer:
     - echo  "==== Assets installed ===="
     - echo  "==== Remove working dir/files ===="
     - rm -rf .git*
+    - rm -rf var/cache/prod
     - rm composer.phar
+    - echo  "==== Make .env file ===="
+    - cp .env.dist .env
+    - sed -i 's;ELASTICSEARCH_SERVER_URL=http://localhost:9200;ELASTICSEARCH_SERVER_URL=<elasticsearch_url>;g' .env
+    - sed -i 's;STAT_ELASTICSEARCH_SERVER_URL=http://localhost:9200;STAT_ELASTICSEARCH_SERVER_URL=<stat_elasticsearch_url>;g' .env
+    - sed -i 's;RECO_ELASTICSEARCH_SERVER_URL=http://localhost:9200;RECO_ELASTICSEARCH_SERVER_URL=<reco_elasticsearch_url>;g' .env
     - echo  "==== Dir content ===="
     - ls -alh
     - ls -alh vendor
     - du -sh vendor/
     - echo  "==== Making artifact in $ARTIFACT_DIR dir ===="
     - zip -qr "$CI_PROJECT_NAME" *
-    - zip "$CI_PROJECT_NAME".zip .env.dist
+    - zip "$CI_PROJECT_NAME".zip .env
     - ls -alh
     - mkdir $ARTIFACT_DIR
     - mv "$CI_PROJECT_NAME".zip ./$ARTIFACT_DIR
