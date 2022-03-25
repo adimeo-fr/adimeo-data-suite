@@ -2,12 +2,19 @@ image:
   name: artifacts.saint-gobain.net/eai-000-docker-public-local/php:8.1.3
   entrypoint: [""]
 
+variables:
+  ARTIFACT_DIR: output
+
+stages:
+  - build
+  - deploy
+
 build_composer:
   stage: build
   artifacts:
     name: "$CI_PROJECT_NAME"
     paths:
-      - ./*
+      - $ARTIFACT_DIR/*
     expire_in: 5 days
   tags:
     - website_node
@@ -27,12 +34,26 @@ build_composer:
     - apt-get update && apt-get -y install unzip zip git 
     - echo  "==== Get dependencies ===="
     - php composer.phar install --ignore-platform-reqs  --no-dev --optimize-autoloader
-    - echo  "==== Remove working files ===="
+    - echo  "==== Make assets ===="
+    - php bin/console assets:install
+    - echo  "==== Assets installed ===="
+    - echo  "==== Remove working dir/files ===="
     - rm -rf .git*
     - rm composer.phar
     - echo  "==== Dir content ===="
-    - ls -al
+    - ls -alh
+    - ls -alh vendor
+    - du -sh vendor/
+    - echo  "==== Making artifact in $ARTIFACT_DIR dir ===="
+    - zip -qr "$CI_PROJECT_NAME" *
+    - zip "$CI_PROJECT_NAME".zip .env.dist
+    - ls -alh
+    - mkdir $ARTIFACT_DIR
+    - mv "$CI_PROJECT_NAME".zip ./$ARTIFACT_DIR
+    - ls -alh
+    - ls -alh $ARTIFACT_DIR
     - echo  "==== END OF build JOB ===="
+
   only:
     - master
 
@@ -42,11 +63,11 @@ deploy_jfrog:
     - website_node
   script:
     - echo  "==== STARTING deploy JOB ===="
-    - num=$(( "$CI_JOB_ID" - 1 ))
-    - echo  "==== Get the $num artifact ===="
-    - 'curl --location --output "$CI_PROJECT_NAME".zip --header "JOB-TOKEN: $CI_JOB_TOKEN" "$CI_API_V4_URL/projects/5/jobs/$num/artifacts"'
+    - echo  "==== $ARTIFACT_DIR content ===="
+    - ls -alh $ARTIFACT_DIR
     - echo  "==== Push artifact on $JFROG_REPO_COMPOSER repo ===="
-    - curl -k -H "X-JFrog-Art-Api:$JFROG_API_KEY" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/ -T "$CI_PROJECT_NAME".zip
-    - echo  "==== END OF deploy JOB ===="
+    - curl -k -H "X-JFrog-Art-Api:$JFROG_API_KEY" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/ -T  $ARTIFACT_DIR/"$CI_PROJECT_NAME".zip
+    - echo  "==== deploy JOB ENDED ===="
   only:
     - master
+
