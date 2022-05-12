@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5ab7221b0d3b46a0fd8b77de9d657cbc",
+    "content-hash": "f107178a60f903cdd248ac0170127b90",
     "packages": [
         {
             "name": "adimeo-data-suite/commons",
-            "version": "1.2.3",
+            "version": "dev-features/add-request-options",
             "source": {
                 "type": "git",
-                "url": "https://github.com/louisicard/adimeo-data-suite-commons.git",
-                "reference": "1973e81db78e7df03fde4e500cae69abca846336"
+                "url": "https://github.com/nicoCSGBDF/adimeo-data-suite-commons.git",
+                "reference": "7b7e6e36f0d818003a4d89bdf9cd299d3b8ee255"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/louisicard/adimeo-data-suite-commons/zipball/1973e81db78e7df03fde4e500cae69abca846336",
-                "reference": "1973e81db78e7df03fde4e500cae69abca846336",
+                "url": "https://api.github.com/repos/nicoCSGBDF/adimeo-data-suite-commons/zipball/7b7e6e36f0d818003a4d89bdf9cd299d3b8ee255",
+                "reference": "7b7e6e36f0d818003a4d89bdf9cd299d3b8ee255",
                 "shasum": ""
             },
             "require": {
@@ -30,12 +30,10 @@
                     "AdimeoDataSuite\\": ""
                 }
             },
-            "notification-url": "https://packagist.org/downloads/",
             "support": {
-                "issues": "https://github.com/louisicard/adimeo-data-suite-commons/issues",
-                "source": "https://github.com/louisicard/adimeo-data-suite-commons/tree/1.2.3"
+                "source": "https://github.com/nicoCSGBDF/adimeo-data-suite-commons/tree/features/add-request-options"
             },
-            "time": "2021-03-17T14:54:07+00:00"
+            "time": "2022-05-12T09:55:31+00:00"
         },
         {
             "name": "adimeo-data-suite/datasources",
@@ -5391,7 +5389,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "adimeo-data-suite/commons": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

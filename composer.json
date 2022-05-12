@@ -2,10 +2,16 @@
     "type": "project",
     "name": "adimeo-data-suite/web-app",
     "license": "proprietary",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nicoCSGBDF/adimeo-data-suite-commons.git"
+        }
+    ],
     "require": {
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "adimeo-data-suite/commons": "*",
+        "adimeo-data-suite/commons": "dev-features/add-request-options",
         "adimeo-data-suite/datasources": "*",
         "adimeo-data-suite/filters": "*",
         "adimeo-data-suite/search-client": "*",
