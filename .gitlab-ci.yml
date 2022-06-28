@@ -79,6 +79,10 @@ deploy_jfrog:
     - echo  "==== $ARTIFACT_DIR content ===="
     - ls -alh $ARTIFACT_DIR
     - echo  "==== Push artifact on $JFROG_REPO_COMPOSER repo ===="
-    - curl -k -H "X-JFrog-Art-Api:$JFROG_API_KEY" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/ -T  $ARTIFACT_DIR/"$CI_PROJECT_NAME".zip
+    #- curl -k -H "X-JFrog-Art-Api:$JFROG_API_KEY" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/ -T  $ARTIFACT_DIR/"$CI_PROJECT_NAME".zip
+    - RESULT=$(curl -sk -H "X-JFrog-Art-Api:$JFROG_API_KEY" -o /dev/null -w "%{http_code}" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/ -T  $ARTIFACT_DIR/"$CI_PROJECT_NAME".zip)
+    - echo  "==== JFROG POST RESULT ===="
+    - echo $RESULT
+    - if [ "$RESULT" != "201" ]; then echo "Error artifact not created => http code $RESULT" && exit 2; else echo "Success on post artifact";  fi
     - echo  "==== deploy JOB ENDED ===="
 
