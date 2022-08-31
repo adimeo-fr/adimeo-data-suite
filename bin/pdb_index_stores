@@ -1,0 +1,58 @@
+#!/usr/bin/env php
+
+<?php
+ini_set("display_errors", "1");
+ini_set("error_reporting", E_ALL);
+print '======= Starting Indexation ======='.PHP_EOL;
+
+$host = '<host_ecom>';
+$port = '3306';
+$dbname = '<dbname_ecom>';
+$user = '<user_ecom>';
+$password = '<password_ecom>';
+$log_path = '<path/to/ads>/var/log';
+$ads_path = '<path/to/ads>';
+
+$pdo = new PDO("mysql:host={$host};port={$port};dbname={$dbname};charset=UTF8;", $user, $password);
+$from = $argc > 1 ? (int)$argv[1] : 0;
+$store_query = $pdo->query("SELECT * FROM store WHERE uid>={$from} ORDER BY uid ASC");
+
+$store_uids = $store_query->fetchAll(PDO::FETCH_COLUMN);
+$indexing_store_uid_position = 0;
+$stores = count($store_uids);
+$concurrent_tasks = 8;
+
+while ($indexing_store_uid_position < $stores) {
+  $indexing_store_uids = array_slice($store_uids, $indexing_store_uid_position, $concurrent_tasks);
+
+  foreach ($indexing_store_uids as $i => $store_uid) {
+    $pid = pcntl_fork();
+
+    if ($pid == -1) {
+      exit("Store [{$store_uid}] Error when forking");
+    } else if ($pid == 0) {
+      $attempts = 1;
+      $retry_on_fail = true;
+
+      while ($retry_on_fail && $attempts <= 10) {
+        $output=null;
+        $returned_val=null;
+        $command = "php {$ads_path}/bin/console --env=prod ads:exec PdbStoreDatasource {$store_uid} > {$log_path}/index_{$store_uid}.log";
+        sleep($i);
+        print "Store [{$store_uid}] Attempt [{$attempts}] => ".$command.PHP_EOL;
+        exec($command, $output, $returned_val);
+
+        $attempts++;
+        if ($returned_val === 0) $retry_on_fail = false;
+        else sleep(2);
+      }
+      exit();
+    }
+  }
+
+  while(pcntl_waitpid(0, $status) != -1);
+  print '---'.PHP_EOL;
+  $indexing_store_uid_position += $concurrent_tasks;
+}
+
+print '======= Finishing Indexation =======';
