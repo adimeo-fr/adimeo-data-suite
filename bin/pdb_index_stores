@@ -37,7 +37,7 @@ while ($indexing_store_uid_position < $stores) {
       while ($retry_on_fail && $attempts <= 10) {
         $output=null;
         $returned_val=null;
-        $command = "php {$ads_path}/bin/console --env=prod ads:exec PdbStoreDatasource {$store_uid} > {$log_path}/index_{$store_uid}.log";
+        $command = "php {$ads_path}/bin/console --env=prod ads:exec Dwm52oIBuo0niVFPdUgz {$store_uid} > {$log_path}/index_{$store_uid}.log";
         sleep($i);
         print "Store [{$store_uid}] Attempt [{$attempts}] => ".$command.PHP_EOL;
         exec($command, $output, $returned_val);
