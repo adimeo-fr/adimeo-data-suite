@@ -103,11 +103,7 @@ class SearchAPIController extends AdimeoDataSuiteController
 
         $query_string = $request->get('query') != null ? $request->get('query') : '*';
         if($request->get('escapeQuery') == null || $request->get('escapeQuery') == 1) {
-          $query_string = str_replace(':', '\:', $query_string);
-          $query_string = str_replace('!', '\!', $query_string);
-          $query_string = str_replace('?', '\?', $query_string);
-          $query_string = str_replace('/', '\\', $query_string);
-          $query_string = str_replace('+', '\+', $query_string);
+          $query_string = preg_replace('/(?<!\\\)(?:[":!~\?\/\+\-\^\(\)\[\]\{\}]|\|{2}|&&)/', '\\\$0', $query_string);
         }
 
         if (count($nested_analyzed_fields) > 0) {
@@ -392,6 +388,14 @@ class SearchAPIController extends AdimeoDataSuiteController
               }
             }
           }
+        }
+
+        if ($request->get('collapse') != null) {
+          $query['collapse'] = json_decode($request->get('collapse'));
+        }
+
+        if ($request->get('explain') != null) {
+          $query['explain'] = "true";
         }
 
 
