@@ -149,6 +149,14 @@ class SearchAPIController extends AdimeoDataSuiteController
           }
         }
 
+        $body = json_decode($request->getContent(), TRUE);
+        if (
+          ($request->get('postFilter') != null) ||
+          (isset($body['postFilter']) && !empty($body['postFilter']))
+        ){
+          $query['post_filter'] = json_decode($request->get('postFilter') ?? $body['postFilter']);
+        }
+
         $applied_facets = array();
         $refactor_for_boolean_query = FALSE;
         if (is_array($request->get('filter'))) {
