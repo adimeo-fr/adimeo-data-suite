@@ -149,14 +149,6 @@ class SearchAPIController extends AdimeoDataSuiteController
           }
         }
 
-        $body = json_decode($request->getContent(), TRUE);
-        if (
-          ($request->get('postFilter') != null) ||
-          (isset($body['postFilter']) && !empty($body['postFilter']))
-        ){
-          $query['post_filter'] = json_decode($request->get('postFilter') ?? $body['postFilter']);
-        }
-
         $applied_facets = array();
         $refactor_for_boolean_query = FALSE;
         if (is_array($request->get('filter'))) {
@@ -319,6 +311,14 @@ class SearchAPIController extends AdimeoDataSuiteController
           }
         }
 
+        $body = json_decode($request->getContent(), TRUE);
+        if (
+          ($request->get('postFilter') != null) ||
+          (isset($body['postFilter']) && !empty($body['postFilter']))
+        ){
+          $query['post_filter'] = json_decode($request->get('postFilter') ?? $body['postFilter'], TRUE);
+        }
+
         if ($request->get('facets') != null) {
           $facets = explode(',', $request->get('facets'));
           foreach ($facets as $facet) {
@@ -380,14 +380,24 @@ class SearchAPIController extends AdimeoDataSuiteController
             }
           }
 
-          if(isset($query['query']['bool']['filter'])) {
+          if((isset($query['query']['bool']['filter']) && isset($filterQueries)) || isset($query['post_filter'])) {
+            $isFilterExist = isset($query['query']['bool']['filter']) && isset($filterQueries);
+            $isPostFilterExist = isset($query['post_filter']);
             foreach ($query['aggs'] as $agg_name => $agg) {
-              if(in_array($agg_name, $stickyFacets) && isset($filterQueries)) {
+              if(in_array($agg_name, $stickyFacets)) {
+                $filter = $isFilterExist ? $this->computeFilter($filterQueries, $agg_name, $stickyFacets) : [];
+                if ($isPostFilterExist) {
+                  if (array_key_exists('bool', $filter) && array_key_exists('must', $filter['bool'])) {
+                    $filter['bool']['must'][] = $query['post_filter'];
+                  } else {
+                    $filter = $query['post_filter'];
+                  }
+                }
                 $query['aggs']['sticky_' . $agg_name] = array(
                   'global' => new \stdClass(),
                   'aggs' => array(
                     'sticky_' . $agg_name => array(
-                      'filter' => $this->computeFilter($filterQueries, $agg_name, $stickyFacets),//Put null in $skipField to disable sticky facets
+                      'filter' => $filter,//Put null in $skipField to disable sticky facets
                       'aggs' => array(
                         'sticky_' . $agg_name => $agg
                       )
@@ -408,7 +418,6 @@ class SearchAPIController extends AdimeoDataSuiteController
         if ($request->get('explain') != null) {
           $query['explain'] = "true";
         }
-
 
         if ($request->get('sort') != null && count(explode(',', $request->get('sort'))) == 2) {
           $field_parts = explode('.', explode(',', $request->get('sort'))[0]);
