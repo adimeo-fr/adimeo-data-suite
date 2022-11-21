@@ -5,17 +5,10 @@ ini_set("display_errors", "1");
 ini_set("error_reporting", E_ALL);
 print '======= Starting Indexation ======='.PHP_EOL;
 
-$host = '<host_ecom>';
-$port = '3306';
-$dbname = '<dbname_ecom>';
-$user = '<user_ecom>';
-$password = '<password_ecom>';
-$log_path = '<path/to/ads>/var/log';
-$ads_path = '<path/to/ads>';
+$ads_path = dirname(getcwd(),1);
 
-$pdo = new PDO("mysql:host={$host};port={$port};dbname={$dbname};charset=UTF8;", $user, $password);
-$from = $argc > 1 ? (int)$argv[1] : 0;
-$store_query = $pdo->query("SELECT * FROM store WHERE uid>={$from} ORDER BY uid ASC");
+$pdo = new PDO("mysql:host={$argv[1]};dbname={$argv[2]};charset=UTF8;", $argv[3], $argv[4]);
+$store_query = $pdo->query("SELECT * FROM store ORDER BY uid ASC");
 
 $store_uids = $store_query->fetchAll(PDO::FETCH_COLUMN);
 $indexing_store_uid_position = 0;
@@ -37,7 +30,7 @@ while ($indexing_store_uid_position < $stores) {
       while ($retry_on_fail && $attempts <= 10) {
         $output=null;
         $returned_val=null;
-        $command = "php {$ads_path}/bin/console --env=prod ads:exec K0p1YIMBcVx9qtAZD7GP {$store_uid} > {$log_path}/index_{$store_uid}.log";
+        $command = "php {$ads_path}/bin/console --env=prod ads:exec K0p1YIMBcVx9qtAZD7GP {$store_uid} > {$ads_path}/var/log/index_{$store_uid}.log 2>&1";
         sleep($i);
         print "Store [{$store_uid}] Attempt [{$attempts}] => ".$command.PHP_EOL;
         exec($command, $output, $returned_val);
