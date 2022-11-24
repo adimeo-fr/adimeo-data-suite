@@ -5,10 +5,11 @@ ini_set("display_errors", "1");
 ini_set("error_reporting", E_ALL);
 print '======= Starting Indexation ======='.PHP_EOL;
 
-$ads_path = dirname(getcwd(),1);
-
 $pdo = new PDO("mysql:host={$argv[1]};dbname={$argv[2]};charset=UTF8;", $argv[3], $argv[4]);
 $store_query = $pdo->query("SELECT * FROM store ORDER BY uid ASC");
+
+$path = str_contains($argv[1], 'prd') ? 'search.laplateforme.com' : 'search-test.laplateforme.com';
+$ads_path = "/srv/www/sites/{$path}/current";
 
 $store_uids = $store_query->fetchAll(PDO::FETCH_COLUMN);
 $indexing_store_uid_position = 0;
