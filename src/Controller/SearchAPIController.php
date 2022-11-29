@@ -149,9 +149,25 @@ class SearchAPIController extends AdimeoDataSuiteController
           }
         }
 
+        $body = json_decode($request->getContent(), TRUE);
+        if (
+          ($request->get('postFilter') != null) ||
+          (isset($body['postFilter']) && !empty($body['postFilter']))
+        ){
+          $query['post_filter'] = json_decode($request->get('postFilter') ?? $body['postFilter'], TRUE);
+        }
+
         $applied_facets = array();
         $refactor_for_boolean_query = FALSE;
-        if (is_array($request->get('filter'))) {
+        if ((isset($body['filter']) && !empty($body['filter']))){
+          $refactor_for_boolean_query = TRUE;
+          $query['query'] = array(
+            'bool' => array(
+              'must' => array($query['query'])
+            )
+          );
+          $query['query']['bool']['filter'] = json_decode($request->get('filter') ?? $body['filter'], TRUE);
+        } elseif (is_array($request->get('filter'))) {
           $filters = array();
           foreach ($request->get('filter') as $filter) {
             preg_match('/(?P<name>[^!=><]*)(?P<operator>[!=><]+)"(?P<value>[^"]*)"/', $filter, $matches);
@@ -309,14 +325,6 @@ class SearchAPIController extends AdimeoDataSuiteController
               );
             }
           }
-        }
-
-        $body = json_decode($request->getContent(), TRUE);
-        if (
-          ($request->get('postFilter') != null) ||
-          (isset($body['postFilter']) && !empty($body['postFilter']))
-        ){
-          $query['post_filter'] = json_decode($request->get('postFilter') ?? $body['postFilter'], TRUE);
         }
 
         if ($request->get('facets') != null) {
