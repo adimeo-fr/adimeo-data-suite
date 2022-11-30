@@ -163,11 +163,13 @@ class SearchAPIController extends AdimeoDataSuiteController
           $refactor_for_boolean_query = TRUE;
           $query['query'] = array(
             'bool' => array(
-              'must' => array($query['query'])
+              'must' => array($query['query']),
+              'filter' => array()
             )
           );
-          $query['query']['bool']['filter'] = json_decode($request->get('filter') ?? $body['filter'], TRUE);
-        } elseif (is_array($request->get('filter'))) {
+          $query['query']['bool']['filter'][] = json_decode($body['filter'], TRUE);
+        }
+        if (is_array($request->get('filter'))) {
           $filters = array();
           foreach ($request->get('filter') as $filter) {
             preg_match('/(?P<name>[^!=><]*)(?P<operator>[!=><]+)"(?P<value>[^"]*)"/', $filter, $matches);
@@ -184,11 +186,6 @@ class SearchAPIController extends AdimeoDataSuiteController
           }
           if (count($filters) > 0) {
             $refactor_for_boolean_query = TRUE;
-            $query['query'] = array(
-              'bool' => array(
-                'must' => array($query['query'])
-              )
-            );
             $filterQueries = array();
             foreach ($filters as $filter) {
               switch ($filter['operator']) {
@@ -266,7 +263,16 @@ class SearchAPIController extends AdimeoDataSuiteController
                 $filterQueries[$filter['field']][] = $subquery;
               }
             }
-            $query['query']['bool']['filter'] = $this->computeFilter($filterQueries, NULL, $stickyFacets);
+
+            if ((!isset($query['query']['bool']) || empty($query['query']['bool']))){
+              $query['query'] = array(
+                'bool' => array(
+                  'must' => array($query['query']),
+                  'filter' => array()
+                )
+              );
+            }
+            $query['query']['bool']['filter'][] = $this->computeFilter($filterQueries, NULL, $stickyFacets);
           }
         }
         if ($request->get('ids') != null) {
