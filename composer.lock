@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/nicoCSGBDF/adimeo-data-suite-commons.git",
-                "reference": "126bd952c346397fcaadd15bf6da269b43cbe542"
+                "reference": "aec6a9930d72cce0920bcd04bb4eab271fbfc9fa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nicoCSGBDF/adimeo-data-suite-commons/zipball/126bd952c346397fcaadd15bf6da269b43cbe542",
-                "reference": "126bd952c346397fcaadd15bf6da269b43cbe542",
+                "url": "https://api.github.com/repos/nicoCSGBDF/adimeo-data-suite-commons/zipball/aec6a9930d72cce0920bcd04bb4eab271fbfc9fa",
+                "reference": "aec6a9930d72cce0920bcd04bb4eab271fbfc9fa",
                 "shasum": ""
             },
             "require": {
@@ -33,7 +33,7 @@
             "support": {
                 "source": "https://github.com/nicoCSGBDF/adimeo-data-suite-commons/tree/features/add-request-options"
             },
-            "time": "2022-09-21T08:59:21+00:00"
+            "time": "2022-12-01T13:19:59+00:00"
         },
         {
             "name": "adimeo-data-suite/datasources",
