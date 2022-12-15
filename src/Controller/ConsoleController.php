@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,6 +50,11 @@ use Symfony\Component\HttpFoundation\Request;
       'searchQuery' => $savedQuery != null && $savedQuery->getDefinition() != null ? $savedQuery->getDefinition() : json_encode(array('query' => array('match_all' => array("boost" => 1))), JSON_PRETTY_PRINT),
       'deleteByQuery' => false,
     );
+
+    if ($savedQuery != null){
+      $values['queryID'] = $savedQuery->getId();
+    }
+  
     $form = $this->createFormBuilder($values)
       ->add('mapping', ChoiceType::class, array(
         'label' => $this->get('translator')->trans('Target'),
@@ -59,13 +65,21 @@ use Symfony\Component\HttpFoundation\Request;
         'label' => $this->get('translator')->trans('Search query (JSON)'),
         'required' => true
       ))
-      ->add('deleteByQuery', CheckboxType::class, array(
-        'label' => $this->get('translator')->trans('Delete records matching this query'),
-        'required' => false
-      ))
-      ->add('execute', SubmitType::class, array('label' => $this->get('translator')->trans('Execute')))
       ->addEventListener(FormEvents::PRE_SUBMIT, $listener)
       ->getForm();
+    
+    if($savedQuery === null){
+      $form->add('queryID', TextType::class, array(
+        'label' => $this->get('translator')->trans('Query ID'),
+        'required' => false
+      ));
+    }
+
+    $form->add('deleteByQuery', CheckboxType::class, array(
+      'label' => $this->get('translator')->trans('Delete records matching this query'),
+      'required' => false
+    ))
+    ->add('execute', SubmitType::class, array('label' => $this->get('translator')->trans('Execute')));
 
     $form->handleRequest($request);
     $params = array(
@@ -87,8 +101,8 @@ use Symfony\Component\HttpFoundation\Request;
           }
           $params['engine_response'] = $this->getFormattedEngineReponse($res);
           $saveUrlParams = array();
-          if($request->get('id') != null){
-            $saveUrlParams['id'] = $request->get('id');
+          if($request->get('id') != null || $data['queryID']){
+            $saveUrlParams['id'] = $data['queryID'] ?? $request->get('id');
           }
           $saveUrlParams['target'] = $data['mapping'];
           $saveUrlParams['query'] = $data['searchQuery'];
@@ -96,7 +110,10 @@ use Symfony\Component\HttpFoundation\Request;
           $params['save_url'] = $saveUrl;
           if(isset($saveUrlParams['id'])){
             unset($saveUrlParams['id']);
-            $params['clone_url'] = $this->generateUrl('console-save', $saveUrlParams);
+
+            if (!isset($data['queryID']) || empty($data['queryID'])){
+              $params['clone_url'] = $this->generateUrl('console-save', $saveUrlParams);
+            }
           }
         } else {
           $this->getIndexManager()->deleteByQuery($index, $query_r, $mapping);

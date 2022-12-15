@@ -49,4 +49,9 @@ while ($indexing_store_uid_position < $stores) {
   $indexing_store_uid_position += $concurrent_tasks;
 }
 
+print '======= Remove old products ======='.PHP_EOL;
+$cmd = "php {$ads_path}/bin/console --env=prod ads:delete-by-query AWxxYcm9riNEsh0BkRkW > {$ads_path}/var/log/index_clean.log 2>&1";
+print $cmd.PHP_EOL;
+exec($cmd);
+
 print '======= Finishing Indexation =======';
