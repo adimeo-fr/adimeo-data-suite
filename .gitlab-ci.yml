@@ -1,6 +1,12 @@
 workflow:
   rules:
-    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/
+      variables:
+        JFROG_DIR: 'production'
+    - if: $CI_COMMIT_BRANCH =~ /^release\/.+$/
+      variables:
+        JFROG_DIR: 'preproduction'
+    - if: $CI_COMMIT_BRANCH =~ /^(recette|integration)$/
 
 image:
   name: artifacts.saint-gobain.com/eai-000-docker-public-local/php:8.1.3
@@ -8,6 +14,7 @@ image:
 
 variables:
   ARTIFACT_DIR: output
+  JFROG_DIR: $CI_COMMIT_BRANCH
 
 stages:
   - build
@@ -23,28 +30,17 @@ build_composer:
   tags:
     - website_node
   script:
-    - echo  "==== STARTING build JOB ===="
-    #- export http_proxy=http://"$CLN_PROXY"
-    #- export https_proxy=http://"$CLN_PROXY"
     - export APP_ENV=prod
-    - echo  "==== Get composer ===="
     - curl -x "$CLN_PROXY" -o composer-setup.php https://getcomposer.org/installer
-    #- php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
     - php composer-setup.php
     - php -r "unlink('composer-setup.php');"
     - php composer.phar --version
-    - echo  "==== Get build tools  ===="
     - apt-get update && apt-get -y install unzip zip git 
-    - echo  "==== Get dependencies ===="
     - php composer.phar install --ignore-platform-reqs  --no-dev --optimize-autoloader
-    - echo  "==== Make assets ===="
     - php bin/console assets:install
-    - echo  "==== Assets installed ===="
-    - echo  "==== Remove working dir/files ===="
     - rm -rf .git*
     - rm -rf var/cache/prod
     - rm composer.phar
-    - echo  "==== Make .env file ===="
     - cp .env.dist .env
     - sed -i 's;ELASTICSEARCH_SERVER_URL=http://localhost:9200;ELASTICSEARCH_SERVER_URL=<elasticsearch_url>;g' .env
     - sed -i 's;STAT_ELASTICSEARCH_SERVER_URL=http://localhost:9200;STAT_ELASTICSEARCH_SERVER_URL=<elasticsearch_url>;g' .env
@@ -56,33 +52,15 @@ build_composer:
     - sed -i 's;ADS_API_APPLY_BOOSTING=0;ADS_API_APPLY_BOOSTING=1;g' .env
     - sed -i 's;IS_LEGACY=0;IS_LEGACY=1;g' .env
     - sed -i 's;COLLECT_STATS=1;COLLECT_STATS=0;g' .env
-    - echo  "==== Dir content ===="
-    - ls -alh
-    - ls -alh vendor
-    - du -sh vendor/
-    - echo  "==== Making artifact in $ARTIFACT_DIR dir ===="
     - zip -qr "$CI_PROJECT_NAME" *
     - zip "$CI_PROJECT_NAME".zip .env
-    - ls -alh
     - mkdir $ARTIFACT_DIR
-    - mv "$CI_PROJECT_NAME".zip ./$ARTIFACT_DIR
-    - ls -alh
-    - ls -alh $ARTIFACT_DIR
-    - echo  "==== END OF build JOB ===="
+    - mv "$CI_PROJECT_NAME".zip ./$ARTIFACT_DIR/"$CI_PROJECT_NAME"-"$CI_COMMIT_SHORT_SHA".zip
 
 deploy_jfrog:
   stage: deploy
   tags:
     - website_node
   script:
-    - echo  "==== STARTING deploy JOB ===="
-    - echo  "==== $ARTIFACT_DIR content ===="
-    - ls -alh $ARTIFACT_DIR
-    - echo  "==== Push artifact on $JFROG_REPO_COMPOSER repo ===="
-    #- curl -k -H "X-JFrog-Art-Api:$JFROG_API_KEY" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/ -T  $ARTIFACT_DIR/"$CI_PROJECT_NAME".zip
-    - RESULT=$(curl -sk -H "X-JFrog-Art-Api:$JFROG_API_KEY" -o /dev/null -w "%{http_code}" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/ -T  $ARTIFACT_DIR/"$CI_PROJECT_NAME".zip)
-    - echo  "==== JFROG POST RESULT ===="
-    - echo $RESULT
+    - RESULT=$(curl -sk -H "X-JFrog-Art-Api:$JFROG_API_KEY" -o /dev/null -w "%{http_code}" "$JFROG_ARTIFACTORY"/"$JFROG_REPO_COMPOSER"/"$JFROG_DIR"/ -T  $ARTIFACT_DIR/"$CI_PROJECT_NAME"-"$CI_COMMIT_SHORT_SHA".zip)
     - if [ "$RESULT" != "201" ]; then echo "Error artifact not created => http code $RESULT" && exit 2; else echo "Success on post artifact";  fi
-    - echo  "==== deploy JOB ENDED ===="
-
