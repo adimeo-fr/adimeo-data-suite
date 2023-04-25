@@ -1,0 +1,73 @@
+#!/usr/bin/env php
+
+<?php
+ini_set("display_errors", "1");
+ini_set("error_reporting", E_ALL);
+print '======= Starting Indexation ======='.PHP_EOL;
+
+$stores_uid = explode(",", $argv[1]);
+$nb_stores = count($stores_uid);
+$products_uid = explode(",", $argv[2]);
+$nb_products = count($products_uid);
+$ads_path = realpath(__DIR__."/../");
+
+$CONCURRENT_TASKS = 8;
+$MAX_INDEXING_ATTEMPTS = 3;
+$indexing_store_uid_position = 0;
+
+$cmd = "echo '' > {$ads_path}/var/log/index_stores_products.log 2>&1";
+exec($cmd);
+
+while ($indexing_store_uid_position < $nb_stores) {
+  $indexing_stores_uid = array_slice($stores_uid, $indexing_store_uid_position, $CONCURRENT_TASKS);
+
+  for ($i=0, $nb_indexing_stores = count($indexing_stores_uid); $i < $nb_indexing_stores; $i++) {
+    switch ($pid = pcntl_fork()) {
+      case -1:
+        exit("Store [{$indexing_stores_uid[$i]}] Error when forking");
+        break;
+
+      case 0:
+        for ($j=0; $j < $nb_products; $j++) {
+          switch ($sub_pid = pcntl_fork()) {
+            case -1:
+              exit("Store [{$indexing_stores_uid[$i]}] Product [{$products_uid[$j]}] Error when forking");
+              break;
+
+            case 0:
+              $attempts = 1;
+              $retry_on_fail = true;
+              while ($retry_on_fail && $attempts <= $MAX_INDEXING_ATTEMPTS) {
+                $output=null;
+                $returned_val=null;
+                $command = "php {$ads_path}/bin/console --env=prod ads:exec vAJm-oMB7v2t4sfdLK5f {$indexing_stores_uid[$i]} {$products_uid[$j]} >> {$ads_path}/var/log/index_stores_products.log 2>&1";
+                sleep($i);
+                print "Store [{$indexing_stores_uid[$i]}] Product [{$products_uid[$j]}] Attempt [{$attempts}] => ".$command.PHP_EOL;
+                exec($command, $output, $returned_val);
+
+                $attempts++;
+                if ($returned_val === 0) $retry_on_fail = false;
+                else sleep(2);
+              }
+              exit();
+              break;
+
+            default:
+              pcntl_waitpid($sub_pid, $status);
+              break;
+          }
+        }
+        exit();
+        break;
+
+      default:
+        pcntl_waitpid($pid, $status);
+        break;
+    }
+  }
+
+  print '---'.PHP_EOL;
+  $indexing_store_uid_position += $CONCURRENT_TASKS;
+}
+
+print '======= Finishing Indexation ======='.PHP_EOL;
