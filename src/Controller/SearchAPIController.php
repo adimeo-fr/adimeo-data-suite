@@ -896,4 +896,15 @@ class SearchAPIController extends AdimeoDataSuiteController
     }
   }
 
+  public function indexAnalyze(Request $request)
+  {
+    try {
+      $res = $this->getIndexManager()->analyze($request->get('index'), $request->get('analyzer'), $request->get('text'));
+      return new Response(json_encode($res), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type, Pragma, If-Modified-Since, Cache-Control'));
+    }
+    catch(\Exception $ex){
+      return new Response(json_encode(array('error' => $ex->getMessage())), 200, array('Content-Type' => 'application/json; charset=utf-8'));
+    }
+  }
+
 }
