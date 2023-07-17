@@ -1,306 +1,617 @@
 # This file is the entry point to configure your own services.
+
 # Files in the packages/ subdirectory configure your dependencies.
 
+
+
 # Put parameters here that don't need to change on each machine where the app is deployed
+
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+
 parameters:
+
   locale: 'en'
 
+  guzzle.request.options:
+
+    auth: ['%env(string:ELASTIC_USER)%', '%env(string:ELASTIC_PWD)%']
+
+    verify: '%env(bool:ELASTIC_VERIFY)%'
+
+
+
 services:
+
   # default configuration for services in *this* file
+
   _defaults:
+
     autowire: true      # Automatically injects dependencies in your services.
+
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
     public: false       # Allows optimizing the container by removing unused services; this also means
+
                           # fetching services directly from the container via $container->get() won't work.
+
                           # The best practice is to be explicit about your dependencies anyway.
 
+
+
   # makes classes in src/ available to be used as services
+
   # this creates a service per class whose id is the fully-qualified class name
+
   App\:
+
     resource: '../src/*'
+
     exclude: '../src/{DependencyInjection,Entity,Migrations,Tests,Kernel.php}'
 
+
+
   # controllers are imported separately to make sure services can be injected
+
   # as action arguments even if you don't extend any base controller class
+
   App\Controller\:
+
     resource: '../src/Controller'
+
     tags: ['controller.service_arguments']
 
+
+
   # add more service definitions when explicit configuration is needed
+
   # please note that last definitions always *replace* previous ones
 
+
+
   App\Twig\AppExtension:
+
     tags: ['twig.extension']
+
+
 
   stringloader:
+
     class: Twig_Extension_StringLoader
+
     tags: ['twig.extension']
 
+
+
   adimeo_data_suite_es_server:
+
     class: AdimeoDataSuite\Index\IndexManager
-    arguments: ["%env(ELASTICSEARCH_SERVER_URL)%", "%env(IS_LEGACY)%", "%env(MAX_REPLICAS)%"]
+
+    arguments: ["%env(ELASTICSEARCH_SERVER_URL)%", "%env(IS_LEGACY)%", "%env(MAX_REPLICAS)%", '%guzzle.request.options%']
+
     public: true
+
   adimeo_data_suite_stat_es_server:
+
     class: AdimeoDataSuite\Index\StatIndexManager
-    arguments: ["%env(STAT_ELASTICSEARCH_SERVER_URL)%", "%env(ADS_STAT_INDEX_NB_SHARDS)%", "%env(ADS_STAT_INDEX_NB_REPLICAS)%", "%env(IS_LEGACY)%", "%env(MAX_REPLICAS)%"]
+
+    arguments: ["%env(STAT_ELASTICSEARCH_SERVER_URL)%", "%env(ADS_STAT_INDEX_NB_SHARDS)%", "%env(ADS_STAT_INDEX_NB_REPLICAS)%", "%env(IS_LEGACY)%", "%env(MAX_REPLICAS)%", '%guzzle.request.options%']
+
     public: true
+
   adimeo_data_suite_reco_es_server:
+
     class: AdimeoDataSuite\Index\RecoIndexManager
-    arguments: ["%env(RECO_ELASTICSEARCH_SERVER_URL)%", "%env(ADS_RECO_INDEX_NB_SHARDS)%", "%env(ADS_RECO_INDEX_NB_REPLICAS)%", "%env(IS_LEGACY)%", "%env(MAX_REPLICAS)%"]
+
+    arguments: ["%env(RECO_ELASTICSEARCH_SERVER_URL)%", "%env(ADS_RECO_INDEX_NB_SHARDS)%", "%env(ADS_RECO_INDEX_NB_REPLICAS)%", "%env(IS_LEGACY)%", "%env(MAX_REPLICAS)%", '%guzzle.request.options%']
+
     public: true
+
   adimeo_data_suite_backups_es_server:
+
     class: AdimeoDataSuite\Index\BackupsManager
-    arguments: ["%env(STAT_ELASTICSEARCH_SERVER_URL)%", "%env(IS_LEGACY)%"]
+
+    arguments: ["%env(STAT_ELASTICSEARCH_SERVER_URL)%", "%env(IS_LEGACY)%", '%guzzle.request.options%']
+
     public: true
+
   adimeo_data_suite_synonyms_dictionaries_manager:
+
     class: AdimeoDataSuite\Index\SynonymsDictionariesManager
+
     arguments: ["%env(SYNONYMS_DICTIONARIES_PATH)%"]
+
     public: true
+
   adimeo_data_suite_pdo_pool:
+
     class: AdimeoDataSuite\PDO\PDOPool
+
     public: true
+
   App\Controller\SecurityController:
+
     arguments: ["%env(ADS_INDEX_NB_SHARDS)%", "%env(ADS_INDEX_NB_REPLICAS)%"]
+
   App\Controller\SearchAPIController:
+
     arguments: ["%env(ADS_API_APPLY_BOOSTING)%", "%env(COLLECT_STATS)%"]
+
   App\Controller\RecommandationController:
+
     arguments: ["@adimeo_data_suite_reco_es_server"]
 
+
+
   adimeodatasource.datasource.textfileparser:
+
       class: AdimeoDataSuite\Datasource\TextFileParser
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.directoryscanner:
+
       class: AdimeoDataSuite\Datasource\DirectoryScanner
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.drupalctexport:
+
       class: AdimeoDataSuite\Datasource\DrupalCtExport
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.jsonparser:
+
       class: AdimeoDataSuite\Datasource\JSONParser
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.oaiharvester:
+
       class: AdimeoDataSuite\Datasource\OAIHarvester
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.pdodatabase:
+
       class: AdimeoDataSuite\Datasource\PDODatabase
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.queryexecutor:
+
       class: AdimeoDataSuite\Datasource\QueryExecutor
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.webcrawler:
+
       class: AdimeoDataSuite\Datasource\WebCrawler
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.xmlparser:
+
       class: AdimeoDataSuite\Datasource\XMLParser
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.scrollableapi:
+
       class: AdimeoDataSuite\Datasource\ScrollableAPI
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
+
 
   adimeodatasource.filters.concatenatefilter:
+
       class: AdimeoDataSuite\ProcessorFilter\ConcatenateFilter
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.filter }
+
   adimeodatasource.filters.phpfilter:
+
     class: AdimeoDataSuite\ProcessorFilter\PHPFilter
+
     public: true
+
     tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.smartmapper:
-    class: AdimeoDataSuite\ProcessorFilter\SmartMapper
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.matchinglistfilter:
-    class: AdimeoDataSuite\ProcessorFilter\MatchingListFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.arrayimplodefilter:
-    class: AdimeoDataSuite\ProcessorFilter\ArrayImplodeFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.associativearrayselectorfilter:
-    class: AdimeoDataSuite\ProcessorFilter\AssociativeArraySelectorFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.debugfilter:
-    class: AdimeoDataSuite\ProcessorFilter\DebugFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.defineconstantfilter:
-    class: AdimeoDataSuite\ProcessorFilter\DefineConstantFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.existingdocumentfilter:
-    class: AdimeoDataSuite\ProcessorFilter\ExistingDocumentFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.deletedocumentfilter:
-    class: AdimeoDataSuite\ProcessorFilter\DeleteDocumentFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.googlegeocodingfilter:
-    class: AdimeoDataSuite\ProcessorFilter\GoogleGeocodingFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.htmltextextractorfilter:
-    class: AdimeoDataSuite\ProcessorFilter\HTMLTextExtractorFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.linkeddataauthorfilter:
-    class: AdimeoDataSuite\ProcessorFilter\LinkedDataAuthorFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.pdoqueryfilter:
-    class: AdimeoDataSuite\ProcessorFilter\PDOQueryFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.simplexmlparserfilter:
-    class: AdimeoDataSuite\ProcessorFilter\SimpleXMLParserFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.xmlparserfilter:
-    class: AdimeoDataSuite\ProcessorFilter\XMLParserFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.xmlparsertoarrayfilter:
-    class: AdimeoDataSuite\ProcessorFilter\XMLParserToArrayFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.xpathfinderfilter:
-    class: AdimeoDataSuite\ProcessorFilter\XPathFinderFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.xpathgetterfilter:
-    class: AdimeoDataSuite\ProcessorFilter\XPathGetterFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.xpathselectorattributesfilter:
-    class: AdimeoDataSuite\ProcessorFilter\XPathSelectorAttributesFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.xpathselectorfilter:
-    class: AdimeoDataSuite\ProcessorFilter\XPathSelectorFilter
-    public: true
-    tags:
-      - { name: adimeodatasuite.filter }
-  adimeodatasource.filters.analysisfilter:
-    class: AdimeoDataSuite\ProcessorFilter\AnalysisFilter
-    public: true
-    tags:
+
       - { name: adimeodatasuite.filter }
 
+  adimeodatasource.filters.smartmapper:
+
+    class: AdimeoDataSuite\ProcessorFilter\SmartMapper
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.matchinglistfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\MatchingListFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.arrayimplodefilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\ArrayImplodeFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.associativearrayselectorfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\AssociativeArraySelectorFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.debugfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\DebugFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.defineconstantfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\DefineConstantFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.existingdocumentfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\ExistingDocumentFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.deletedocumentfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\DeleteDocumentFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.googlegeocodingfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\GoogleGeocodingFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.htmltextextractorfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\HTMLTextExtractorFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.linkeddataauthorfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\LinkedDataAuthorFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.pdoqueryfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\PDOQueryFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.simplexmlparserfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\SimpleXMLParserFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.xmlparserfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\XMLParserFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.xmlparsertoarrayfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\XMLParserToArrayFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.xpathfinderfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\XPathFinderFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.xpathgetterfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\XPathGetterFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.xpathselectorattributesfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\XPathSelectorAttributesFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.xpathselectorfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\XPathSelectorFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+  adimeodatasource.filters.analysisfilter:
+
+    class: AdimeoDataSuite\ProcessorFilter\AnalysisFilter
+
+    public: true
+
+    tags:
+
+      - { name: adimeodatasuite.filter }
+
+
+
   adimeodatasuite.stat.avgresponsetimestatcompiler:
+
     class: AdimeoDataSuite\Stat\AvgResponseTimeStatCompiler
+
     arguments: ["@adimeo_data_suite_stat_es_server"]
+
     public: true
+
     tags:
+
       - { name: adimeodatasuite.stat }
+
   adimeodatasuite.stat.keywordstatcompiler:
+
     class: AdimeoDataSuite\Stat\KeywordsStatCompiler
+
     arguments: ["@adimeo_data_suite_stat_es_server"]
+
     public: true
+
     tags:
+
       - { name: adimeodatasuite.stat }
+
   adimeodatasuite.stat.rawkeywordstatcompiler:
+
     class: AdimeoDataSuite\Stat\RawKeywordsStatCompiler
+
     arguments: ["@adimeo_data_suite_stat_es_server"]
+
     public: true
+
     tags:
+
       - { name: adimeodatasuite.stat }
+
   adimeodatasuite.stat.querycountstatcompiler:
+
     class: AdimeoDataSuite\Stat\QueryCountStatCompiler
+
     arguments: ["@adimeo_data_suite_stat_es_server"]
+
     public: true
+
     tags:
+
       - { name: adimeodatasuite.stat }
+
   adimeodatasuite.stat.responsetimestatcompiler:
+
     class: AdimeoDataSuite\Stat\ResponseTimeStatCompiler
+
     arguments: ["@adimeo_data_suite_stat_es_server"]
+
     public: true
+
     tags:
+
       - { name: adimeodatasuite.stat }
+
   adimeodatasuite.stat.querystatcompiler:
+
     class: AdimeoDataSuite\Stat\QueryStatCompiler
+
     arguments: ["@adimeo_data_suite_stat_es_server"]
+
     public: true
+
     tags:
+
       - { name: adimeodatasuite.stat }
+
   adimeodatasuite.stat.noresultsquerystatcompiler:
+
     class: AdimeoDataSuite\Stat\NoResultsQueryStatCompiler
+
     arguments: ["@adimeo_data_suite_stat_es_server"]
+
     public: true
+
     tags:
+
       - { name: adimeodatasuite.stat }
+
   adimeodatasuite.stat.popularresultsstatcompiler:
+
     class: AdimeoDataSuite\Stat\PopularResultsStatCompiler
+
     arguments: ["@adimeo_data_suite_stat_es_server"]
+
     public: true
+
     tags:
+
       - { name: adimeodatasuite.stat }
+
+
+
 
 
   adimeodatasource.datasource.sharepointsearch:
+
       class: AdimeoDataSuite\Datasource\SharepointSearch
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.datasource.sharepointchangelogs:
+
       class: AdimeoDataSuite\Datasource\SharepointChangeLogs
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.datasource }
+
   adimeodatasource.filter.sharepointfiledownloader:
+
       class: AdimeoDataSuite\ProcessorFilter\SharepointFileDownloader
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.filter }
+
   adimeodatasource.filter.sharepointdocumentretriever:
+
       class: AdimeoDataSuite\ProcessorFilter\SharepointDocumentRetriever
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.filter }
+
   adimeodatasource.filter.tikafilter:
+
       class: AdimeoDataSuite\ProcessorFilter\TikaFilter
+
       public: true
+
       tags:
+
         - { name: adimeodatasuite.filter }

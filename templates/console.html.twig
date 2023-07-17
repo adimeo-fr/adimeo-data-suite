@@ -66,7 +66,11 @@
                   {%if hit._source[col] is defined%}
                     <td>
                       {%if hit._source[col] is not iterable %}
-                        {{hit._source[col]|raw}}
+                        {% if hit._source[col] is same as(true) or hit._source[col] is same as(false) %}
+                          {{ hit._source[col] ? 'true' : 'false' }}
+                        {%else%}
+                          {{hit._source[col]|raw}}
+                        {%endif%}
                       {%else%}
                         Array
                       {%endif%}

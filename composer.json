@@ -2,11 +2,16 @@
     "type": "project",
     "name": "adimeo-data-suite/web-app",
     "license": "proprietary",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/nicoCSGBDF/adimeo-data-suite-commons.git"
+        }
+    ],
     "require": {
-        "php": "^8.0",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "adimeo-data-suite/commons": "*",
+        "adimeo-data-suite/commons": "dev-features/add-request-options",
         "adimeo-data-suite/datasources": "*",
         "adimeo-data-suite/filters": "*",
         "adimeo-data-suite/search-client": "*",
@@ -16,29 +21,33 @@
         "adimeo-data-suite/tika": "*",
         "mmucklo/krumo": "^0.5.7",
         "sensio/framework-extra-bundle": "^5.2",
-        "symfony/asset": "^4.4.11",
-        "symfony/cache": "^4.4.11",
-        "symfony/console": "^4.4.11",
+        "symfony/asset": "*",
+        "symfony/cache": "*",
+        "symfony/console": "*",
+        "symfony/dotenv": "4.4.*",
         "symfony/flex": "^1.1",
-        "symfony/form": "^4.4.11",
-        "symfony/framework-bundle": "^4.4.11",
-        "symfony/security-bundle": "^4.4.11",
-        "symfony/security-csrf": "^4.4.11",
-        "symfony/translation": "^4.4.11",
-        "symfony/twig-bundle": "^4.4.11",
-        "symfony/yaml": "^4.4.11",
-        "symfony/dotenv": "^4.4.11",
+        "symfony/form": "*",
+        "symfony/framework-bundle": "*",
+        "symfony/security-bundle": "*",
+        "symfony/security-csrf": "*",
+        "symfony/translation": "*",
+        "symfony/twig-bundle": "*",
+        "symfony/yaml": "*",
         "twig/extensions": "^1.5"
     },
     "require-dev": {
-        "symfony/profiler-pack": "^1.0",
+        "symfony/stopwatch": "4.4.*",
+        "symfony/web-profiler-bundle": "4.4.*",
         "symfony/web-server-bundle": "*"
     },
     "config": {
         "preferred-install": {
             "*": "dist"
         },
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "symfony/flex": true
+        }
     },
     "autoload": {
         "psr-4": {

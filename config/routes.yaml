@@ -225,6 +225,9 @@ search-api-autocomplete:
 search-api-v2-custom:
   path: /search-api/v2/custom
   controller: App\Controller\SearchAPIController::customSearchAction
+search-api-v2-index-analyse:
+  path: /search-api/v2/index-analyse
+  controller: App\Controller\SearchAPIController::indexAnalyze
 search-pages:
   path: /search-pages
   controller: App\Controller\SearchPageController::listSearchPagesAction
