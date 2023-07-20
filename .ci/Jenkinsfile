@@ -13,6 +13,8 @@ pipeline {
         // DOCKER_BUILDKIT='1'
         APP_SECRET = credentials('APP_SECRET')
         ELASTIC_CREDENTIALS = credentials("${app_name.toUpperCase()}_ELASTIC_CREDENTIALS")
+        DB_ROOT_CREDENTIALS = credentials("${app_name.toUpperCase()}_DB_ROOT_CREDENTIALS")
+        DB_USER_CREDENTIALS = credentials("${app_name.toUpperCase()}_DB_APP_CREDENTIALS")
 
     }
   stages {
@@ -95,21 +97,18 @@ pipeline {
             remote.host = "${REMOTE_HOST}"
             remote.allowAnyHosts = true
             withCredentials([
-                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser'),
-                usernamePassword(credentialsId: "${app_name.toUpperCase()}_DB_ROOT_CREDENTIALS", passwordVariable: 'rootPassword', usernameVariable: 'rootUsername'),
-                usernamePassword(credentialsId: "${app_name.toUpperCase()}_DB_APP_CREDENTIALS", passwordVariable: 'appPassword', usernameVariable: 'appUsername')
+                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
                 ]){
                         remote.user = sshUser
                         remote.identityFile = identity
-                        sh "echo ${identity}"
                         sshCommand remote: remote, command: """
                             if ! docker ps --format '{{.Names}}' | grep -w ${app_name}_search_bdd &> /dev/null; then
                                 docker run --restart always --name ${app_name}_search_bdd \
                                     -v ${app_name}_mysql_data:/var/lib/mysql \
                                     --network web \
-                                    -e MARIADB_ROOT_PASSWORD=$rootPassword \
-                                    -e MARIADB_USER=$appUsername \
-                                    -e MARIADB_PASSWORD=$appPassword \
+                                    -e MARIADB_ROOT_PASSWORD=$DB_ROOT_CREDENTIALS_PSW \
+                                    -e MARIADB_USER=$DB_USER_CREDENTIALS_USR \
+                                    -e MARIADB_PASSWORD=$DB_USER_CREDENTIALS_PSW \
                                     -e MARIADB_DATABASE=${app_name} \
                                     -d mariadb:${mariadb_version}
                             fi
@@ -127,10 +126,7 @@ pipeline {
             remote.host = "${REMOTE_HOST}"
             remote.allowAnyHosts = true
             withCredentials([
-                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser'),
-                string(credentialsId: ELASTIC_USER, variable: 'elastic_user'),
-                string(credentialsId: ELASTIC_PWD, variable: 'elastic_pwd'),
-                string(credentialsId: ELASTIC_VERIFY, variable: 'elastic_verify')
+                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
             ]) {
               remote.user = sshUser
               remote.identityFile = identity
@@ -139,8 +135,8 @@ pipeline {
                       docker run -d --restart always \
                         --name $els_server \
                         -v search_data:/usr/share/elasticsearch/data \
-                        -e ELASTIC_USERNAME=$elastic_user \
-                        -e ELASTIC_PASSWORD=$elastic_pwd \
+                        -e ELASTIC_USERNAME=$ELASTIC_CREDENTIALS_USR \
+                        -e ELASTIC_PASSWORD=$ELASTIC_CREDENTIALS_PSW \
                         -e discovery.type=single-node \
                         -e ingest.geoip.downloader.enabled=false \
                         --network web \
