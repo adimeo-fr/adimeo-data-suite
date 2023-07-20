@@ -26,7 +26,9 @@ pipeline {
               string(credentialsId: SYNONYMS_DICTIONARIES_PATH, variable: 'synonyms_dictionaries_path'),
               string(credentialsId: COLLECT_STATS, variable: 'collect_stats'),
               string(credentialsId: IS_LEGACY, variable: 'is_legacy'),
-              string(credentialsId: MAX_REPLICAS, variable: 'max_replicas')
+              string(credentialsId: MAX_REPLICAS, variable: 'max_replicas'),
+              usernamePassword(credentialsId: "${app_name.toUpperCase()}_ELASTIC_CREDENTIALS", passwordVariable: 'elastic_pwd', usernameVariable: 'elastic_user'),
+              string(credentialsId: ELASTIC_VERIFY, variable: 'elastic_verify')
             ])
             {
               adimeo.env('.env')
@@ -51,6 +53,7 @@ pipeline {
                   .add('ELASTIC_VERIFY', "$elastic_verify")
           }
 
+                sh "sed -i 's/search_ads:9000/search_ads_php:9000/g' .docker/config/nginx/search.conf"
                 sh "sed -i 's/APP_PUBLIC_HOST/${PROJECT_URL}/g' .docker/config/nginx/search.conf"
 
           }
@@ -86,8 +89,8 @@ pipeline {
             remote.allowAnyHosts = true
             withCredentials([
                 sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser'),
-                usernamePassword(credentialsId: "${app_name.toUpperCase()}_DB_ROOT_PASSWORD", passwordVariable: 'rootPassword', usernameVariable: 'rootUsername'),
-                usernamePassword(credentialsId: "${app_name.toUpperCase()}_DB_APP_PASSWORD", passwordVariable: 'appPassword', usernameVariable: 'appUsername')
+                usernamePassword(credentialsId: "${app_name.toUpperCase()}_DB_ROOT_CREDENTIALS", passwordVariable: 'rootPassword', usernameVariable: 'rootUsername'),
+                usernamePassword(credentialsId: "${app_name.toUpperCase()}_DB_APP_CREDENTIALS", passwordVariable: 'appPassword', usernameVariable: 'appUsername')
                 ]){
                         remote.user = sshUser
                         remote.identityFile = identity
