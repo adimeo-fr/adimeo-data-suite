@@ -157,7 +157,7 @@ pipeline {
             remote.host = "${REMOTE_HOST}"
             remote.allowAnyHosts = true
             withCredentials([
-                usernamePassword(credentialsId: 'cms-registry-auth', passwordVariable: 'password', usernameVariable: 'username'),
+                usernamePassword(credentialsId: 'symfony-registry-auth', passwordVariable: 'password', usernameVariable: 'username'),
                 sshUserPrivateKey(credentialsId: "symfony-dev2-admin-priv-key", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
             ]) {
                     remote.user = sshUser
