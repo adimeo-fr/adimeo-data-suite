@@ -1,0 +1,193 @@
+@Library('jenkins-shared-library')_
+
+def adimeo = adimeo()
+def els_version = "$ELS_VERSION"
+def app_name = "pdb"
+def els_server =  "ads_els_$app_name"
+def els_version = "7.17.9"
+def mariadb_version = "10.5.21"
+def php_version = "8.1.16"
+
+pipeline {
+  agent any
+  stages {
+    stage('Configure the project') {
+      steps {
+          script {
+            withCredentials([
+              string(credentialsId: APP_SECRET, variable: 'app_secret'),
+              string(credentialsId: ADS_INDEX_NB_SHARDS, variable: 'index_nb_shards'),
+              string(credentialsId: ADS_INDEX_NB_REPLICAS, variable: 'index_nb_replicas'),
+              string(credentialsId: ADS_STAT_INDEX_NB_SHARDS, variable: 'stat_index_nb_shards'),
+              string(credentialsId: ADS_STAT_INDEX_NB_REPLICAS, variable: 'stat_index_nb_replicas'),
+              string(credentialsId: ADS_RECO_INDEX_NB_SHARDS, variable: 'reco_index_nb_shards'),
+              string(credentialsId: ADS_RECO_INDEX_NB_REPLICAS, variable: 'reco_index_nb_replicas'),
+              string(credentialsId: ADS_API_APPLY_BOOSTING, variable: 'api_apply_boosting'),
+              string(credentialsId: SYNONYMS_DICTIONARIES_PATH, variable: 'synonyms_dictionaries_path'),
+              string(credentialsId: COLLECT_STATS, variable: 'collect_stats'),
+              string(credentialsId: IS_LEGACY, variable: 'is_legacy'),
+              string(credentialsId: MAX_REPLICAS, variable: 'max_replicas')
+            ])
+            {
+              adimeo.env('.env')
+                  .add('APP_ENV', 'prod')
+                  .add('APP_SECRET', "$app_secret")
+                  .add('ELASTICSEARCH_SERVER_URL', "$els_server:9200")
+                  .add('STAT_ELASTICSEARCH_SERVER_URL', "$els_server:9200")
+                  .add('RECO_ELASTICSEARCH_SERVER_URL', "$els_server:9200")
+                  .add('ADS_INDEX_NB_SHARDS', "$index_nb_shards")
+                  .add('ADS_INDEX_NB_REPLICAS', "$index_nb_replicas")
+                  .add('ADS_STAT_INDEX_NB_SHARDS', "$stat_index_nb_shards")
+                  .add('ADS_STAT_INDEX_NB_REPLICAS', "$stat_index_nb_replicas")
+                  .add('ADS_RECO_INDEX_NB_SHARDS', "$reco_index_nb_shards")
+                  .add('ADS_RECO_INDEX_NB_REPLICAS', "$reco_index_nb_replicas")
+                  .add('ADS_API_APPLY_BOOSTING', "$api_apply_boosting")
+                  .add('SYNONYMS_DICTIONARIES_PATH', "$synonyms_dictionaries_path")
+                  .add('COLLECT_STATS', "$collect_stats")
+                  .add('IS_LEGACY', "$is_legacy")
+                  .add('MAX_REPLICAS', "$max_replicas")
+                  .add('ELASTIC_USER', "$elastic_user")
+                  .add('ELASTIC_PWD', "$elastic_pwd")
+                  .add('ELASTIC_VERIFY', "$elastic_verify")
+          }
+
+                sh "sed -i 's/APP_PUBLIC_HOST/${PROJECT_URL}/g' .docker/config/nginx/search.conf"
+
+          }
+      }
+    }
+
+
+    stage('Building docker images') {
+      steps {
+          script {
+              dockerPhpImage = docker.build("$app_name/search_ads:els_${els_version}-php_${php_version}", "--target php .")
+              dockerServerImage = docker.build("$app_name/search_nginx:els_${els_version}-php_${php_version}", "--target nginx .")
+          }
+      }
+    }
+    stage('Pushing image to Docker Registry') {
+      steps {
+          script {
+              docker.withRegistry("https://${CMS_REGISTRY_DOMAIN}", 'docker-registry-credentials') {
+                  dockerServerImage.push();
+                  dockerPhpImage.push();
+              }
+          }
+      }
+    }
+
+    stage('Running mariadb Docker on remote Server') {
+      steps {
+        script {
+            def remote = [:]
+            remote.name = "${REMOTE_HOST}"
+            remote.host = "${REMOTE_HOST}"
+            remote.allowAnyHosts = true
+            withCredentials([
+                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser'),
+                usernamePassword(credentialsId: "${app_name.toUpperCase()}_DB_ROOT_PASSWORD", passwordVariable: 'rootPassword', usernameVariable: 'rootUsername'),
+                usernamePassword(credentialsId: "${app_name.toUpperCase()}_DB_APP_PASSWORD", passwordVariable: 'appPassword', usernameVariable: 'appUsername')
+                ]){
+                        remote.user = sshUser
+                        remote.identityFile = identity
+                        sshCommand remote: remote, command: """
+                            if ! docker ps --format '{{.Names}}' | grep -w ${app_name}_search_bdd &> /dev/null; then
+                                docker run --restart always --name ${app_name}_search_bdd \
+                                    -v ${app_name}_mysql_data:/var/lib/mysql \
+                                    --network web \
+                                    -e MARIADB_ROOT_PASSWORD=$rootPassword \
+                                    -e MARIADB_USER=$appUsername \
+                                    -e MARIADB_PASSWORD=$appPassword \
+                                    -e MARIADB_DATABASE=${app_name} \
+                                    -d mariadb:${mariadb_version}
+                            fi
+                        """
+                    }
+                }
+           }
+        }
+
+    stage('Running els Docker on remote Server') {
+      steps {
+        script {
+            def remote = [:]
+            remote.name = "${REMOTE_HOST}"
+            remote.host = "${REMOTE_HOST}"
+            remote.allowAnyHosts = true
+            withCredentials([
+                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser'),
+                string(credentialsId: ELASTIC_USER, variable: 'elastic_user'),
+                string(credentialsId: ELASTIC_PWD, variable: 'elastic_pwd'),
+                string(credentialsId: ELASTIC_VERIFY, variable: 'elastic_verify')
+            ]) {
+              remote.user = sshUser
+              remote.identityFile = identity
+              sshCommand remote: remote, command: """
+                  if ! docker ps --format '{{.Names}}' | grep -w $els_server &> /dev/null; then
+                      docker run -d --restart always \
+                        --name $els_server \
+                        -v search_data:/usr/share/elasticsearch/data \
+                        -e ELASTIC_USERNAME=$elastic_user \
+                        -e ELASTIC_PASSWORD=$elastic_pwd \
+                        -e discovery.type=single-node \
+                        -e ingest.geoip.downloader.enabled=false \
+                        --network web \
+                        --link search_ads_php \
+                        elasticsearch:${els_version}
+                  fi
+              """
+            }
+        }
+      }
+    }
+
+    stage('Running Docker Server on Remote Server') {
+      steps {
+        script {
+            def remote = [:]
+            remote.name = "${REMOTE_HOST}"
+            remote.host = "${REMOTE_HOST}"
+            remote.allowAnyHosts = true
+            withCredentials([
+                usernamePassword(credentialsId: 'cms-registry-auth', passwordVariable: 'password', usernameVariable: 'username'),
+                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
+            ]) {
+                    remote.user = sshUser
+                    remote.identityFile = identity
+                    sshCommand remote: remote, command: """
+                        docker login -u $username -p $password "https://${CMS_REGISTRY_DOMAIN}"
+
+                        docker rm -f search_ads_php 2> /dev/null || true ; \
+                        docker pull ${CMS_REGISTRY_DOMAIN}/$app_name/search_ads:els_${els_version}-php_${php_version}; \
+
+                        docker run -d \
+                          --name search_ads_php \
+                          --network web \
+                          ${CMS_REGISTRY_DOMAIN}/$app_name/search_ads:els_${els_version}-php_${php_version}
+
+                        docker rm -f search_ads_nginx 2> /dev/null || true ; \
+                        docker pull ${CMS_REGISTRY_DOMAIN}/search_nginx:els_${els_version}-php_${php_version}; \
+                        docker run -d \
+                          --name search_ads_nginx \
+                          --label 'traefik.http.routers.${app_name}.rule=Host(`${PROJECT_URL}`)' \
+                          --label 'traefik.http.routers.${app_name}-secure.tls=true' \
+                          --label 'traefik.http.routers.${app_name}.tls.certresolver=lets-encrypt' \
+                          --label 'traefik.port-80' \
+                          --network web \
+                          --link search_ads_php \
+                          ${CMS_REGISTRY_DOMAIN}/search_nginx:els_${els_version}-php_${php_version}
+                    """
+                }
+            }
+        }
+      }
+    }
+
+
+  post {
+        always {
+            cleanWs()
+        }
+    }
+}
