@@ -13,6 +13,7 @@ pipeline {
         // DOCKER_BUILDKIT='1'
         APP_SECRET = credentials('APP_SECRET')
         ELASTIC_CREDENTIALS = credentials("${app_name.toUpperCase()}_ELASTIC_CREDENTIALS")
+
     }
   stages {
     stage('Configure the project') {
@@ -100,6 +101,7 @@ pipeline {
                 ]){
                         remote.user = sshUser
                         remote.identityFile = identity
+                        sh "echo ${identity}"
                         sshCommand remote: remote, command: """
                             if ! docker ps --format '{{.Names}}' | grep -w ${app_name}_search_bdd &> /dev/null; then
                                 docker run --restart always --name ${app_name}_search_bdd \
