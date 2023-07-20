@@ -8,51 +8,55 @@ def mariadb_version = "10.5.21"
 def php_version = "8.1.16"
 
 pipeline {
-  agent any
+    agent any
+    environment {
+        APP_SECRET = credentials('APP_SECRET')
+        ELASTIC_CREDENTIALS = credentials('${app_name.toUpperCase()}_ELASTIC_CREDENTIALS')
+    }
   stages {
     stage('Configure the project') {
       steps {
           script {
             withCredentials([
-                usernamePassword(credentialsId: APP_SECRET, passwordVariable: 'app_secret'),
+                // usernamePassword(credentialsId: APP_SECRET, passwordVariable: 'app_secret'),
             //   string(credentialsId: APP_SECRET, variable: 'app_secret'),
-              string(credentialsId: ADS_INDEX_NB_SHARDS, variable: 'index_nb_shards'),
-              string(credentialsId: ADS_INDEX_NB_REPLICAS, variable: 'index_nb_replicas'),
-              string(credentialsId: ADS_STAT_INDEX_NB_SHARDS, variable: 'stat_index_nb_shards'),
-              string(credentialsId: ADS_STAT_INDEX_NB_REPLICAS, variable: 'stat_index_nb_replicas'),
-              string(credentialsId: ADS_RECO_INDEX_NB_SHARDS, variable: 'reco_index_nb_shards'),
-              string(credentialsId: ADS_RECO_INDEX_NB_REPLICAS, variable: 'reco_index_nb_replicas'),
-              string(credentialsId: ADS_API_APPLY_BOOSTING, variable: 'api_apply_boosting'),
-              string(credentialsId: SYNONYMS_DICTIONARIES_PATH, variable: 'synonyms_dictionaries_path'),
-              string(credentialsId: COLLECT_STATS, variable: 'collect_stats'),
-              string(credentialsId: IS_LEGACY, variable: 'is_legacy'),
-              string(credentialsId: MAX_REPLICAS, variable: 'max_replicas'),
-              usernamePassword(credentialsId: "${app_name.toUpperCase()}_ELASTIC_CREDENTIALS", passwordVariable: 'elastic_pwd', usernameVariable: 'elastic_user'),
-              string(credentialsId: ELASTIC_VERIFY, variable: 'elastic_verify')
+            //   string(credentialsId: ADS_INDEX_NB_SHARDS, variable: 'index_nb_shards'),
+            //   string(credentialsId: ADS_INDEX_NB_REPLICAS, variable: 'index_nb_replicas'),
+            //   string(credentialsId: ADS_STAT_INDEX_NB_SHARDS, variable: 'stat_index_nb_shards'),
+            //   string(credentialsId: ADS_STAT_INDEX_NB_REPLICAS, variable: 'stat_index_nb_replicas'),
+            //   string(credentialsId: ADS_RECO_INDEX_NB_SHARDS, variable: 'reco_index_nb_shards'),
+            //   string(credentialsId: ADS_RECO_INDEX_NB_REPLICAS, variable: 'reco_index_nb_replicas'),
+            //   string(credentialsId: ADS_API_APPLY_BOOSTING, variable: 'api_apply_boosting'),
+            //   string(credentialsId: SYNONYMS_DICTIONARIES_PATH, variable: 'synonyms_dictionaries_path'),
+            //   string(credentialsId: COLLECT_STATS, variable: 'collect_stats'),
+            //   string(credentialsId: IS_LEGACY, variable: 'is_legacy'),
+            //   string(credentialsId: MAX_REPLICAS, variable: 'max_replicas'),
+            //   usernamePassword(credentialsId: "${app_name.toUpperCase()}_ELASTIC_CREDENTIALS", passwordVariable: 'elastic_pwd', usernameVariable: 'elastic_user'),
+            //   string(credentialsId: ELASTIC_VERIFY, variable: 'elastic_verify')
             ])
             {
               adimeo.env('.env')
                   .add('APP_ENV', 'prod')
-                  .add('APP_SECRET', "$app_secret")
+                  .add('APP_SECRET', "$APP_SECRET")
                   .add('ELASTICSEARCH_SERVER_URL', "$els_server:9200")
                   .add('STAT_ELASTICSEARCH_SERVER_URL', "$els_server:9200")
                   .add('RECO_ELASTICSEARCH_SERVER_URL', "$els_server:9200")
-                  .add('ADS_INDEX_NB_SHARDS', "$index_nb_shards")
-                  .add('ADS_INDEX_NB_REPLICAS', "$index_nb_replicas")
-                  .add('ADS_STAT_INDEX_NB_SHARDS', "$stat_index_nb_shards")
-                  .add('ADS_STAT_INDEX_NB_REPLICAS', "$stat_index_nb_replicas")
-                  .add('ADS_RECO_INDEX_NB_SHARDS', "$reco_index_nb_shards")
-                  .add('ADS_RECO_INDEX_NB_REPLICAS', "$reco_index_nb_replicas")
-                  .add('ADS_API_APPLY_BOOSTING', "$api_apply_boosting")
-                  .add('SYNONYMS_DICTIONARIES_PATH', "$synonyms_dictionaries_path")
-                  .add('COLLECT_STATS', "$collect_stats")
-                  .add('IS_LEGACY', "$is_legacy")
-                  .add('MAX_REPLICAS', "$max_replicas")
-                  .add('ELASTIC_USER', "$elastic_user")
-                  .add('ELASTIC_PWD', "$elastic_pwd")
-                  .add('ELASTIC_VERIFY', "$elastic_verify")
+                  .add('ADS_INDEX_NB_SHARDS', "$ADS_INDEX_NB_SHARDS")
+                  .add('ADS_INDEX_NB_REPLICAS', "$ADS_INDEX_NB_REPLICAS")
+                  .add('ADS_STAT_INDEX_NB_SHARDS', "$ADS_STAT_INDEX_NB_SHARDS")
+                  .add('ADS_STAT_INDEX_NB_REPLICAS', "$ADS_STAT_INDEX_NB_REPLICAS")
+                  .add('ADS_RECO_INDEX_NB_SHARDS', "$ADS_RECO_INDEX_NB_SHARDS")
+                  .add('ADS_RECO_INDEX_NB_REPLICAS', "$ADS_RECO_INDEX_NB_REPLICAS")
+                  .add('ADS_API_APPLY_BOOSTING', "$ADS_API_APPLY_BOOSTING")
+                  .add('SYNONYMS_DICTIONARIES_PATH', "$SYNONYMS_DICTIONARIES_PATH")
+                  .add('COLLECT_STATS', "$COLLECT_STATS")
+                  .add('IS_LEGACY', "$IS_LEGACY")
+                  .add('MAX_REPLICAS', "$MAX_REPLICAS")
+                  .add('ELASTIC_USER', "$ELASTIC_CREDENTIALS_USR")
+                  .add('ELASTIC_PWD', "$ELASTIC_CREDENTIALS_PSW")
+                  .add('ELASTIC_VERIFY', "$ELASTIC_VERIFY")
           }
-
+                sh "cat .env"
                 sh "sed -i 's/search_ads:9000/search_ads_php:9000/g' .docker/config/nginx/search.conf"
                 sh "sed -i 's/APP_PUBLIC_HOST/${PROJECT_URL}/g' .docker/config/nginx/search.conf"
 
