@@ -10,7 +10,7 @@ def php_version = "8.1.16"
 pipeline {
     agent any
     environment {
-        DOCKER_BUILDKIT=1
+        DOCKER_BUILDKIT='1'
         APP_SECRET = credentials('APP_SECRET')
         ELASTIC_CREDENTIALS = credentials("${app_name.toUpperCase()}_ELASTIC_CREDENTIALS")
     }
