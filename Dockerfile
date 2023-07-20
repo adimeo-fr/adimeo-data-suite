@@ -26,8 +26,6 @@ COPY --chown=adimeo:adimeo . /srv/www/search
 WORKDIR /srv/www/search
 RUN APP_ENV=prod composer install --no-interaction --ignore-platform-reqs --optimize-autoloader
 
-USER www-data
-
 # Nginx
 FROM nginx:1.20.1-alpine AS nginx
 ARG APP_PUBLIC_HOST
