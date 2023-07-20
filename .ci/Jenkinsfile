@@ -1,7 +1,6 @@
 @Library('jenkins-shared-library')_
 
 def adimeo = adimeo()
-def els_version = "$ELS_VERSION"
 def app_name = "pdb"
 def els_server =  "ads_els_$app_name"
 def els_version = "7.17.9"
