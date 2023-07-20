@@ -11,7 +11,7 @@ pipeline {
     agent any
     environment {
         APP_SECRET = credentials('APP_SECRET')
-        ELASTIC_CREDENTIALS = credentials('${app_name.toUpperCase()}_ELASTIC_CREDENTIALS')
+        ELASTIC_CREDENTIALS = credentials('PDB_ELASTIC_CREDENTIALS')
     }
   stages {
     stage('Configure the project') {
