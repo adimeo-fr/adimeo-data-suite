@@ -113,12 +113,12 @@ pipeline {
               remote.identityFile = identity
               sshCommand remote: remote, command: """
                   if ! docker ps --format '{{.Names}}' | grep -w $els_server &> /dev/null; then
-                      docker run -d --restart always \
+                      docker run -d \
                         --name $els_server \
                         -p 9200:9200 \
                         -p 9300:9300 \
-                        -e ELASTIC_USERNAME=$ELASTIC_CREDENTIALS_USR \
-                        -e ELASTIC_PASSWORD=$ELASTIC_CREDENTIALS_PSW \
+                        -e "ELASTIC_USERNAME=$ELASTIC_CREDENTIALS_USR" \
+                        -e "ELASTIC_PASSWORD=$ELASTIC_CREDENTIALS_PSW" \
                         -e "discovery.type=single-node"\
                         -e "ES_JAVA_OPTS=-Xms512m -Xmx512m"\
                         -e "cluster.name=docker-cluster"\
