@@ -121,6 +121,9 @@ pipeline {
                         -e ELASTIC_PASSWORD=$ELASTIC_CREDENTIALS_PSW \
                         -e "discovery.type=single-node"\
                         -e "ES_JAVA_OPTS=-Xms512m -Xmx512m"\
+                        -e cluster.name="docker-cluster"\
+                        -e network.host=0.0.0.0\
+                        -e ingest.geoip.downloader.enabled=false\
                         -v search_data:/usr/share/elasticsearch/data \
                         --network web \
                         elasticsearch:${els_version}
