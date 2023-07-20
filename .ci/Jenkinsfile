@@ -10,7 +10,6 @@ def php_version = "8.1.16"
 pipeline {
     agent any
     environment {
-        // DOCKER_BUILDKIT='1'
         APP_SECRET = credentials('APP_SECRET')
         ELASTIC_CREDENTIALS = credentials("${app_name.toUpperCase()}_ELASTIC_CREDENTIALS")
         DB_ROOT_CREDENTIALS = credentials("${app_name.toUpperCase()}_DB_ROOT_CREDENTIALS")
@@ -21,24 +20,6 @@ pipeline {
     stage('Configure the project') {
       steps {
           script {
-            withCredentials([
-                // usernamePassword(credentialsId: APP_SECRET, passwordVariable: 'app_secret'),
-            //   string(credentialsId: APP_SECRET, variable: 'app_secret'),
-            //   string(credentialsId: ADS_INDEX_NB_SHARDS, variable: 'index_nb_shards'),
-            //   string(credentialsId: ADS_INDEX_NB_REPLICAS, variable: 'index_nb_replicas'),
-            //   string(credentialsId: ADS_STAT_INDEX_NB_SHARDS, variable: 'stat_index_nb_shards'),
-            //   string(credentialsId: ADS_STAT_INDEX_NB_REPLICAS, variable: 'stat_index_nb_replicas'),
-            //   string(credentialsId: ADS_RECO_INDEX_NB_SHARDS, variable: 'reco_index_nb_shards'),
-            //   string(credentialsId: ADS_RECO_INDEX_NB_REPLICAS, variable: 'reco_index_nb_replicas'),
-            //   string(credentialsId: ADS_API_APPLY_BOOSTING, variable: 'api_apply_boosting'),
-            //   string(credentialsId: SYNONYMS_DICTIONARIES_PATH, variable: 'synonyms_dictionaries_path'),
-            //   string(credentialsId: COLLECT_STATS, variable: 'collect_stats'),
-            //   string(credentialsId: IS_LEGACY, variable: 'is_legacy'),
-            //   string(credentialsId: MAX_REPLICAS, variable: 'max_replicas'),
-            //   usernamePassword(credentialsId: "${app_name.toUpperCase()}_ELASTIC_CREDENTIALS", passwordVariable: 'elastic_pwd', usernameVariable: 'elastic_user'),
-            //   string(credentialsId: ELASTIC_VERIFY, variable: 'elastic_verify')
-            ])
-            {
               adimeo.env('.env')
                   .add('APP_ENV', 'prod')
                   .add('APP_SECRET', "$APP_SECRET")
@@ -59,7 +40,7 @@ pipeline {
                   .add('ELASTIC_USER', "$ELASTIC_CREDENTIALS_USR")
                   .add('ELASTIC_PWD', "$ELASTIC_CREDENTIALS_PSW")
                   .add('ELASTIC_VERIFY', "$ELASTIC_VERIFY")
-          }
+
                 sh "docker version"
                 sh "env"
                 sh "sed -i 's/search_ads:9000/search_ads_php:9000/g' .docker/config/nginx/search.conf"
@@ -174,7 +155,7 @@ pipeline {
                           ${FRAMEWORK_REGISTRY_DOMAIN}/$app_name/search_ads:els_${els_version}-php_${php_version}
 
                         docker rm -f search_ads_nginx 2> /dev/null || true ; \
-                        docker pull ${FRAMEWORK_REGISTRY_DOMAIN}/search_nginx:els_${els_version}-php_${php_version}; \
+                        docker pull ${FRAMEWORK_REGISTRY_DOMAIN}/$app_name/search_nginx:els_${els_version}-php_${php_version}; \
                         docker run -d \
                           --name search_ads_nginx \
                           --label 'traefik.http.routers.${app_name}.rule=Host(`${PROJECT_URL}`)' \
@@ -183,7 +164,7 @@ pipeline {
                           --label 'traefik.port-80' \
                           --network web \
                           --link search_ads_php \
-                          ${FRAMEWORK_REGISTRY_DOMAIN}/search_nginx:els_${els_version}-php_${php_version}
+                          ${FRAMEWORK_REGISTRY_DOMAIN}/$app_name/search_nginx:els_${els_version}-php_${php_version}
                     """
                 }
             }
