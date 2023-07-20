@@ -120,6 +120,7 @@ pipeline {
                         -e ELASTIC_PASSWORD=$ELASTIC_CREDENTIALS_PSW \
                         -e discovery.type=single-node \
                         -e ingest.geoip.downloader.enabled=false \
+                        -e "ES_JAVA_OPTS=-Xms512m -Xmx512m" \
                         --network web \
                         --link search_ads_php \
                         elasticsearch:${els_version}
