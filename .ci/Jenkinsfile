@@ -97,7 +97,7 @@ pipeline {
             remote.host = "${REMOTE_HOST}"
             remote.allowAnyHosts = true
             withCredentials([
-                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
+                sshUserPrivateKey(credentialsId: "symfony-dev2-admin-priv-key", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
                 ]){
                         remote.user = sshUser
                         remote.identityFile = identity
@@ -126,7 +126,7 @@ pipeline {
             remote.host = "${REMOTE_HOST}"
             remote.allowAnyHosts = true
             withCredentials([
-                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
+                sshUserPrivateKey(credentialsId: "symfony-dev2-admin-priv-key", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
             ]) {
               remote.user = sshUser
               remote.identityFile = identity
@@ -158,7 +158,7 @@ pipeline {
             remote.allowAnyHosts = true
             withCredentials([
                 usernamePassword(credentialsId: 'cms-registry-auth', passwordVariable: 'password', usernameVariable: 'username'),
-                sshUserPrivateKey(credentialsId: "${REMOTE_SERVER_CREDENTIAL_NAME}", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
+                sshUserPrivateKey(credentialsId: "symfony-dev2-admin-priv-key", keyFileVariable: 'identity', passphraseVariable: '', usernameVariable: 'sshUser')
             ]) {
                     remote.user = sshUser
                     remote.identityFile = identity
