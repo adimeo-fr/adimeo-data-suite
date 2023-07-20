@@ -14,7 +14,7 @@ pipeline {
       steps {
           script {
             withCredentials([
-              string(credentialsId: APP_SECRET, variable: 'app_secret'),
+              string(credentialsId: "APP_SECRET", variable: 'app_secret'),
               string(credentialsId: ADS_INDEX_NB_SHARDS, variable: 'index_nb_shards'),
               string(credentialsId: ADS_INDEX_NB_REPLICAS, variable: 'index_nb_replicas'),
               string(credentialsId: ADS_STAT_INDEX_NB_SHARDS, variable: 'stat_index_nb_shards'),
