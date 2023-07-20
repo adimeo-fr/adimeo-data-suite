@@ -72,7 +72,7 @@ pipeline {
     stage('Pushing image to Docker Registry') {
       steps {
           script {
-              docker.withRegistry("https://${CMS_REGISTRY_DOMAIN}", 'docker-registry-credentials') {
+              docker.withRegistry("https://${FRAMEWORK_REGISTRY_DOMAIN}", 'docker-registry-credentials') {
                   dockerServerImage.push();
                   dockerPhpImage.push();
               }
@@ -159,18 +159,18 @@ pipeline {
                     remote.user = sshUser
                     remote.identityFile = identity
                     sshCommand remote: remote, command: """
-                        docker login -u $username -p $password "https://${CMS_REGISTRY_DOMAIN}"
+                        docker login -u $username -p $password "https://${FRAMEWORK_REGISTRY_DOMAIN}"
 
                         docker rm -f search_ads_php 2> /dev/null || true ; \
-                        docker pull ${CMS_REGISTRY_DOMAIN}/$app_name/search_ads:els_${els_version}-php_${php_version}; \
+                        docker pull ${FRAMEWORK_REGISTRY_DOMAIN}/$app_name/search_ads:els_${els_version}-php_${php_version}; \
 
                         docker run -d \
                           --name search_ads_php \
                           --network web \
-                          ${CMS_REGISTRY_DOMAIN}/$app_name/search_ads:els_${els_version}-php_${php_version}
+                          ${FRAMEWORK_REGISTRY_DOMAIN}/$app_name/search_ads:els_${els_version}-php_${php_version}
 
                         docker rm -f search_ads_nginx 2> /dev/null || true ; \
-                        docker pull ${CMS_REGISTRY_DOMAIN}/search_nginx:els_${els_version}-php_${php_version}; \
+                        docker pull ${FRAMEWORK_REGISTRY_DOMAIN}/search_nginx:els_${els_version}-php_${php_version}; \
                         docker run -d \
                           --name search_ads_nginx \
                           --label 'traefik.http.routers.${app_name}.rule=Host(`${PROJECT_URL}`)' \
@@ -179,7 +179,7 @@ pipeline {
                           --label 'traefik.port-80' \
                           --network web \
                           --link search_ads_php \
-                          ${CMS_REGISTRY_DOMAIN}/search_nginx:els_${els_version}-php_${php_version}
+                          ${FRAMEWORK_REGISTRY_DOMAIN}/search_nginx:els_${els_version}-php_${php_version}
                     """
                 }
             }
