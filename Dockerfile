@@ -13,16 +13,20 @@ RUN curl -sS https://getcomposer.org/installer | php && \
 
   docker-php-ext-install pdo_mysql pcntl && \
   pecl install xdebug && \
-  docker-php-ext-enable xdebug pcntl
+  docker-php-ext-enable xdebug pcntl && \
+  touch /var/log/xdebug.log && \
+  chown www-data:www-data /var/log/xdebug.log
+
 
 COPY .docker/config/prod/php/conf.d/custom.ini /usr/local/etc/php/conf.d/custom.ini
 COPY .docker/config/dev/php/conf.d/xdebug.ini /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
-COPY . /srv/www/search
+COPY --chown=adimeo:adimeo . /srv/www/search
+
 
 WORKDIR /srv/www/search
 RUN APP_ENV=prod composer install --no-interaction --ignore-platform-reqs --optimize-autoloader
 
-
+USER www-data
 
 # Nginx
 FROM nginx:1.20.1-alpine AS nginx
