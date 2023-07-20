@@ -57,7 +57,7 @@ pipeline {
                   .add('ELASTIC_PWD', "$ELASTIC_CREDENTIALS_PSW")
                   .add('ELASTIC_VERIFY', "$ELASTIC_VERIFY")
           }
-                sh "cat .env"
+                sh "docker version"
                 sh "sed -i 's/search_ads:9000/search_ads_php:9000/g' .docker/config/nginx/search.conf"
                 sh "sed -i 's/APP_PUBLIC_HOST/${PROJECT_URL}/g' .docker/config/nginx/search.conf"
 
