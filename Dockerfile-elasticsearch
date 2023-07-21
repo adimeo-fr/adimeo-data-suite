@@ -3,4 +3,4 @@ ARG ELS_TAG
 # Elasticsearch
 FROM elasticsearch:${ELS_TAG} AS els
 
-COPY .docker/config/elasticsearch/elasticsearch.yaml /usr/share/elasticsearch/config/elasticsearch.yml
+COPY .docker/config/elasticsearch/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
