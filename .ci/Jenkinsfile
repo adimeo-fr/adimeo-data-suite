@@ -54,8 +54,8 @@ pipeline {
     stage('Building docker images') {
       steps {
           script {
-              dockerPhpImage = docker.build("$app_name/search_ads:els_${els_version}-php_${php_version}", "--build-arg \"PHP_TAG=${php_version}\" --target php .")
-              dockerServerImage = docker.build("$app_name/search_nginx:els_${els_version}-php_${php_version}", "--build-arg \"NGINX_TAG=${nginx_version}\" --target nginx .")
+              dockerPhpImage = docker.build("$app_name/search_ads:els_${els_version}-php_${php_version}", "--build-arg \"PHP_TAG=${php_version}\" -f Dockerfile-php .")
+              dockerServerImage = docker.build("$app_name/search_nginx:els_${els_version}-php_${php_version}", "--build-arg \"NGINX_TAG=${nginx_version}\" -f Dockerfile-nginx nginx .")
               dockerElasticImage = docker.build("$app_name/els:${els_version}", "--build-arg \"ELS_TAG=${els_version}\" -f Dockerfile-elasticsearch .")
           }
       }

@@ -1,0 +1,9 @@
+# Nginx
+
+ARG NGINX_TAG
+FROM nginx:${NGINX_TAG}-alpine AS nginx
+
+COPY .docker/config/nginx/search.conf /etc/nginx/conf.d/search.conf
+COPY ./public /srv/www/search/public
+
+EXPOSE 80

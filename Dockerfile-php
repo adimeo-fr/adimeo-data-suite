@@ -3,7 +3,6 @@
 #============
 
 ARG PHP_TAG
-ARG NGINX_TAG
 
 # ADS
 FROM php:${PHP_TAG}-fpm-alpine AS php
@@ -30,12 +29,4 @@ COPY --chown=adimeo:adimeo . /srv/www/search
 WORKDIR /srv/www/search
 RUN APP_ENV=prod composer install --no-interaction --ignore-platform-reqs --optimize-autoloader
 
-# Nginx
-FROM nginx:${NGINX_TAG}-alpine AS nginx
-ARG APP_PUBLIC_HOST
-
-COPY .docker/config/nginx/search.conf /etc/nginx/conf.d/search.conf
-COPY ./public /srv/www/search/public
-
-EXPOSE 80
 
