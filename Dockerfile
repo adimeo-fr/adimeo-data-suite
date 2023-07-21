@@ -1,8 +1,13 @@
 #============
 # CI DEV
 #============
+
+ARG PHP_TAG
+ARG NGINX_TAG
+ARG ELS_TAG
+
 # ADS
-FROM php:8.1.16-fpm-alpine AS php
+FROM php:${PHP_TAG}-fpm-alpine AS php
 
 RUN curl -sS https://getcomposer.org/installer | php && \
   mv composer.phar /usr/local/bin/composer && \
@@ -27,10 +32,15 @@ WORKDIR /srv/www/search
 RUN APP_ENV=prod composer install --no-interaction --ignore-platform-reqs --optimize-autoloader
 
 # Nginx
-FROM nginx:1.20.1-alpine AS nginx
+FROM nginx:${NGINX_TAG}-alpine AS nginx
 ARG APP_PUBLIC_HOST
 
 COPY .docker/config/nginx/search.conf /etc/nginx/conf.d/search.conf
 COPY ./public /srv/www/search/public
 
 EXPOSE 80
+
+#Elasticsearch
+FROM elasticsearch:${ELS_TAG} AS els
+
+COPY .docker/elasticsearch/elasticsearch.yaml /usr/share/elasticsearch/config/elasticsearch.yaml

@@ -3,9 +3,11 @@
 def adimeo = adimeo()
 def app_name = "pdb"
 def els_server =  "ads_els_$app_name"
+
 def els_version = "7.17.9"
 def mariadb_version = "10.5.21"
 def php_version = "8.1.16"
+def nginx_version = "1.20.1"
 
 pipeline {
     agent any
@@ -54,8 +56,9 @@ pipeline {
     stage('Building docker images') {
       steps {
           script {
-              dockerPhpImage = docker.build("$app_name/search_ads:els_${els_version}-php_${php_version}", "--target php .")
-              dockerServerImage = docker.build("$app_name/search_nginx:els_${els_version}-php_${php_version}", "--target nginx .")
+              dockerPhpImage = docker.build("$app_name/search_ads:els_${els_version}-php_${php_version}", "--build-arg \"PHP_TAG=${php_version}\" --target php .")
+              dockerServerImage = docker.build("$app_name/search_nginx:els_${els_version}-php_${php_version}", "--build-arg \"NGINX_TAG=${nginx_version}\" --target nginx .")
+              dockerElasticImage = docker.build("$app_name/els:${els_version}", "--build-arg \"ELS_TAG=${els_version}\" --target els .")
           }
       }
     }
@@ -65,6 +68,7 @@ pipeline {
               docker.withRegistry("https://${FRAMEWORK_REGISTRY_DOMAIN}", 'docker-registry-credentials') {
                   dockerServerImage.push();
                   dockerPhpImage.push();
+                  dockerElasticImage.push();
               }
           }
       }
@@ -119,16 +123,11 @@ pipeline {
                         -p 9300:9300 \
                         -e "ELASTIC_USERNAME=$ELASTIC_CREDENTIALS_USR" \
                         -e "ELASTIC_PASSWORD=$ELASTIC_CREDENTIALS_PSW" \
-                        -e "discovery.type=single-node"\
                         -e "ES_JAVA_OPTS=-Xms512m -Xmx512m"\
-                        -e "cluster.name=docker-cluster"\
-                        -e "network.host=0.0.0.0"\
-                        -e "ingest.geoip.downloader.enabled=false"\
-                        -e "path.repo=/usr/share/backup"\
                         -v search_data:/usr/share/elasticsearch/data \
                         -v search_backup:/usr/share/backup\
                         --network web \
-                        elasticsearch:${els_version}
+                        ${FRAMEWORK_REGISTRY_DOMAIN}/$app_name/els:${els_version}
                   fi
               """
             }
