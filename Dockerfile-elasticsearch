@@ -4,5 +4,5 @@ ARG ELS_TAG
 FROM elasticsearch:${ELS_TAG} AS els
 
 
-RUN "mkdir -p /usr/share/backup/ && chown elasticsearch:root /usr/share/backup/" 
+RUN "sudo -u elasticsearch mkdir -p /usr/share/backup/"
 COPY .docker/config/elasticsearch/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
