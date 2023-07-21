@@ -124,7 +124,9 @@ pipeline {
                         -e "cluster.name=docker-cluster"\
                         -e "network.host=0.0.0.0"\
                         -e "ingest.geoip.downloader.enabled=false"\
+                        -e "path.repo=/usr/share/backup"\
                         -v search_data:/usr/share/elasticsearch/data \
+                        -v search_backup:/usr/share/backup\
                         --network web \
                         elasticsearch:${els_version}
                   fi
