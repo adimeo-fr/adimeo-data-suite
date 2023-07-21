@@ -43,8 +43,6 @@ pipeline {
                   .add('ELASTIC_PWD', "$ELASTIC_CREDENTIALS_PSW")
                   .add('ELASTIC_VERIFY', "$ELASTIC_VERIFY")
 
-                sh "docker version"
-                sh "env"
                 sh "sed -i 's/search_ads:9000/search_ads_php:9000/g' .docker/config/nginx/search.conf"
                 sh "sed -i 's/APP_PUBLIC_HOST/${PROJECT_URL}/g' .docker/config/nginx/search.conf"
 
@@ -58,7 +56,7 @@ pipeline {
           script {
               dockerPhpImage = docker.build("$app_name/search_ads:els_${els_version}-php_${php_version}", "--build-arg \"PHP_TAG=${php_version}\" --target php .")
               dockerServerImage = docker.build("$app_name/search_nginx:els_${els_version}-php_${php_version}", "--build-arg \"NGINX_TAG=${nginx_version}\" --target nginx .")
-              dockerElasticImage = docker.build("$app_name/els:${els_version}", "--build-arg \"ELS_TAG=${els_version}\" --target els .")
+              dockerElasticImage = docker.build("$app_name/els:${els_version}", "--build-arg \"ELS_TAG=${els_version}\" -f Dockerfile-elasticsearch .")
           }
       }
     }

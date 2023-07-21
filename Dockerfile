@@ -4,7 +4,6 @@
 
 ARG PHP_TAG
 ARG NGINX_TAG
-ARG ELS_TAG
 
 # ADS
 FROM php:${PHP_TAG}-fpm-alpine AS php
@@ -40,7 +39,3 @@ COPY ./public /srv/www/search/public
 
 EXPOSE 80
 
-# Elasticsearch
-FROM elasticsearch:${ELS_TAG} AS els
-
-COPY .docker/config/elasticsearch/elasticsearch.yaml /usr/share/elasticsearch/config/elasticsearch.yaml
