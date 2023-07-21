@@ -40,7 +40,7 @@ COPY ./public /srv/www/search/public
 
 EXPOSE 80
 
-#Elasticsearch
+# Elasticsearch
 FROM elasticsearch:${ELS_TAG} AS els
 
-COPY .docker/elasticsearch/elasticsearch.yaml /usr/share/elasticsearch/config/elasticsearch.yaml
+COPY .docker/config/elasticsearch/elasticsearch.yaml /usr/share/elasticsearch/config/elasticsearch.yaml
