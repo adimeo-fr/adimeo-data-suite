@@ -164,7 +164,7 @@ pipeline {
                           --name search_ads_nginx \
                           --label 'traefik.http.routers.${app_name}.rule=Host(`${PROJECT_URL}`)' \
                           --label 'traefik.http.routers.${app_name}-secure.tls=true' \
-                          --label 'traefik.http.routers.people.middlewares=vpnAdimeoIp@file' \
+                          --label 'traefik.http.routers.${app_name}.middlewares=vpnAdimeoIp@file' \
                           --label 'traefik.http.routers.${app_name}.tls.certresolver=lets-encrypt' \
                           --label 'traefik.port-80' \
                           --network web \
