@@ -117,8 +117,8 @@ pipeline {
                   if ! docker ps --format '{{.Names}}' | grep -w $els_server &> /dev/null; then
                       docker run -d \
                         --name $els_server \
-                        -p 9200:9200 \
-                        -p 9300:9300 \
+                        -p 127.0.0.1:9200:9200 \
+                        -p 127.0.0.1:9300:9300 \
                         -e "ELASTIC_USERNAME=$ELASTIC_CREDENTIALS_USR" \
                         -e "ELASTIC_PASSWORD=$ELASTIC_CREDENTIALS_PSW" \
                         -e "ES_JAVA_OPTS=-Xms512m -Xmx512m"\
