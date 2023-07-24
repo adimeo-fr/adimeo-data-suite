@@ -18,6 +18,9 @@ parameters:
 
     verify: '%env(bool:ELASTIC_VERIFY)%'
 
+  data.folder: '%kernel.project_dir%/data'
+
+
 
 
 services:
@@ -134,7 +137,7 @@ services:
 
   App\Controller\SearchAPIController:
 
-    arguments: ["%env(ADS_API_APPLY_BOOSTING)%", "%env(COLLECT_STATS)%"]
+    arguments: ["@app.query_manager", "%env(ADS_API_APPLY_BOOSTING)%", "%env(COLLECT_STATS)%"]
 
   App\Controller\RecommandationController:
 
@@ -615,3 +618,9 @@ services:
       tags:
 
         - { name: adimeodatasuite.filter }
+
+  app.query_manager:
+
+    class: App\Manager\Query
+
+    public: true

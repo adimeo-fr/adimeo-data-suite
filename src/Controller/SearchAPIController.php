@@ -6,6 +6,7 @@ use AdimeoDataSuite\Exception\ServerClientException;
 use AdimeoDataSuite\Model\Autopromote;
 use AdimeoDataSuite\Model\BoostQuery;
 use AdimeoDataSuite\Model\PersistentObject;
+use App\Manager\Query;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,10 +18,13 @@ class SearchAPIController extends AdimeoDataSuiteController
     private $applyBoostingByDefault;
     private $collectStats;
 
-    public function __construct($applyBoostingByDefault = false, $collectStats = false)
+    private Query $queryManager;
+
+    public function __construct(Query $queryManager, $applyBoostingByDefault = false, $collectStats = false)
     {
         $this->applyBoostingByDefault = $applyBoostingByDefault;
         $this->collectStats = $collectStats;
+        $this->queryManager = $queryManager;
     }
 
     public function searchAPIV2Action(Request $request)
@@ -515,6 +519,8 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
 
+                $query = $this->finalizeQuery($query);
+
                 try {
                     $res = $this->getIndexManager()->search($indexName, $query, $request->get('from') != null ? $request->get('from') : 0, $request->get('size') != null ? $request->get('size') : 10, $mappingName);
 
@@ -896,6 +902,22 @@ class SearchAPIController extends AdimeoDataSuiteController
         } catch (\Exception $ex) {
             return new Response(json_encode(array('error' => $ex->getMessage())), 200, array('Content-Type' => 'application/json; charset=utf-8'));
         }
+    }
+
+    private function finalizeQuery($query)
+    {
+        // Remove stop words
+        $query = $this->queryManager->removeStopWords($query);
+
+        // Get pinned documents
+        $query = $this->queryManager->setPinnedDocuments($query);
+
+        // Slop
+        $query = $this->queryManager->setSlop($query);
+
+        return $query;
+
+        //echo json_encode($query); die;
     }
 
 }
