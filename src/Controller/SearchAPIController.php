@@ -518,7 +518,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 if ($request->get('include_fields') != null) {
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
-
+                //file_put_contents('demo.txt', print_r($query, true)); die;
                 $query = $this->finalizeQuery($query);
 
                 try {
@@ -915,9 +915,10 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Slop
         $query = $this->queryManager->setSlop($query);
 
-        return $query;
+        //return $query;
 
-        //echo json_encode($query); die;
+        echo '<pre>';
+        echo json_encode($query); die;
     }
 
 }

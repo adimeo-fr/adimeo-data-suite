@@ -15,21 +15,30 @@ class Query
 
     public function removeStopWords($query)
     {
-        $keyword = $query['query']['bool']['must'][0]['query_string']['query'];
+        $keyword = $this->retrieveKeywordFromQuery($query);
+
         $stopwords = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'stopwords.json'), true);
 
         foreach ($stopwords as &$word) {
             $word = '/\b' . preg_quote($word, '/') . '\b/';
         }
-        $query['query']['bool']['must'][0]['query_string']['query'] = preg_replace($stopwords, '', $keyword);
+
+        $clean_str = trim(preg_replace($stopwords, '', $keyword));
+
+        if (isset($query['query']['bool']['must'][0]['query_string'])) {
+            $query['query']['bool']['must'][0]['query_string']['query'] = $clean_str;
+        } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
+            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = $clean_str;
+        }
 
         return $query;
     }
 
     public function setPinnedDocuments($query)
     {
-        $keyword = $query['query']['bool']['must'][0]['query_string']['query'];
-        $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'stopwords.json'), true);
+        $keyword = $this->retrieveKeywordFromQuery($query);
+
+        $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'pinned.json'), true);
 
         $search = array_search($keyword, array_column($pinned, 'query'));
 
@@ -43,7 +52,7 @@ class Query
 
     public function setSlop($query)
     {
-        $keyword = $query['query']['bool']['must'][0]['query_string']['query'];
+        $keyword = $this->retrieveKeywordFromQuery($query);
         $count = count($query['query']['bool']['must']);
 
         $query['query']['bool']['must'][$count]['span_near']['slop'] = 2;
@@ -67,5 +76,16 @@ class Query
         }
 
         return $query;
+    }
+
+    private function retrieveKeywordFromQuery($query)
+    {
+        if (isset($query['query']['bool']['must'][0]['query_string'])) {
+            return $query['query']['bool']['must'][0]['query_string']['query'];
+        } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
+            return $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'];
+        }
+
+        return '';
     }
 }

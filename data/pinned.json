@@ -1,14 +1,42 @@
 [
   {
-    "query": "plaque",
-    "ids": "1,2,3"
+    "query": "ba13",
+    "ids": "8208_1,8213_1,45734_1"
   },
   {
-    "query": "brosse",
-    "ids": "4,5,6"
+    "query": "bati support",
+    "ids": "32457_1,32458_1"
   },
   {
-    "query": "peinture",
-    "ids": "7,8,9"
+    "query": "montant stil",
+    "ids": "8223_1,12991_1,24046_1"
+  },
+  {
+    "query": "peinture mate",
+    "ids": "20576_1"
+  },
+  {
+    "query": "colle weber",
+    "ids": "113452_1,113456_1"
+  },
+  {
+    "query": "peinture velours",
+    "ids": "66319_1,114972_1"
+  },
+  {
+    "query": "fourrure stil",
+    "ids": "14150_1,8241_1"
+  },
+  {
+    "query": "cable r2v",
+    "ids": "9766_1"
+  },
+  {
+    "query": "laine de verre",
+    "ids": "81533_1,51559_1"
+  },
+  {
+    "query": "scrigno",
+    "ids": "80264_1,80262_1"
   }
 ]
