@@ -1,0 +1,101 @@
+name: pdb
+services:
+  search:
+    image: elasticsearch:7.17.9
+    container_name: search
+    restart: unless-stopped
+    environment:
+      discovery.type: single-node
+      ingest.geoip.downloader.enabled: false
+      ELASTIC_USERNAME: ${ELASTIC_USER}
+      ELASTIC_PASSWORD: ${ELASTIC_PWD}
+    volumes:
+      - type: volume
+        source: search_data
+        target: /usr/share/elasticsearch/data
+    healthcheck:
+      test: curl -o /dev/null -fsS http://localhost:9200/_cluster/health?wait_for_status=green || exit 1
+    security_opt:
+      - no-new-privileges:true
+
+  search_ads:
+    image: pdb/search_ads:${APP_ENV}
+    build:
+      context: .
+      target: php
+    command: >
+      sh -c '
+        [ -f .env.example ] && cp -n .env.example .env;
+        ([ ! -d vendor ] || [ ! $(ls -A vendor) ]) && composer install --no-interaction --ignore-platform-reqs --optimize-autoloader || sleep 45s;
+        php-fpm
+      '
+    container_name: search_ads
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: $PWD
+        target: /srv/www/search
+    depends_on:
+      search:
+        condition: service_healthy
+    healthcheck:
+      test: cgi-fcgi -bind -connect localhost:9000 > /dev/null 2>&1 || exit 1
+    security_opt:
+      - no-new-privileges:true
+
+  search_nginx:
+    image: pdb/search_nginx:${APP_ENV}
+    build:
+      context: .
+      target: nginx
+      args:
+        APP_PUBLIC_HOST: ${APP_PUBLIC_HOST}
+    container_name: search_nginx
+    restart: unless-stopped
+    volumes:
+      - type: bind
+        source: $PWD/public
+        target: /srv/www/search/public
+    depends_on:
+      search_ads:
+        condition: service_healthy
+    healthcheck:
+      test: curl -o /dev/null -fsS http://localhost || exit 1
+    security_opt:
+      - no-new-privileges:true
+    labels:
+      traefik.enable: true
+      traefik.http.routers.pdb_search.rule: "Host(`${APP_PUBLIC_HOST}`)"
+      traefik.http.routers.pdb_search.entrypoints: "http"
+      traefik.http.routers.pdb_search.service: "pdb_search"
+      traefik.http.services.pdb_search.loadbalancer.server.port: 80
+      traefik.http.services.pdb_search.loadbalancer.server.scheme: "http"
+
+  search_db:
+    image: mariadb:10.5.21
+    container_name: search_db
+    restart: unless-stopped
+    environment:
+      MARIADB_DATABASE: ecom
+      MARIADB_USER: ecom_user
+      MARIADB_PASSWORD: ecom_pwd
+      MARIADB_ROOT_PASSWORD: ecom_pwd
+    volumes:
+      - type: volume
+        source: ecom_db_data
+        target: /var/lib/mysql
+    healthcheck:
+      test: mariadb-admin -uroot -pecom_pwd ping > /dev/null || exit 1
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  search_data:
+    name: search_data
+  ecom_db_data:
+    name: ecom_db_data
+
+networks:
+  default:
+    external: true
+    name: adimeo_local_proxy

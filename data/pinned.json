@@ -1,0 +1,14 @@
+[
+  {
+    "query": "plaque",
+    "ids": "1,2,3"
+  },
+  {
+    "query": "brosse",
+    "ids": "4,5,6"
+  },
+  {
+    "query": "peinture",
+    "ids": "7,8,9"
+  }
+]

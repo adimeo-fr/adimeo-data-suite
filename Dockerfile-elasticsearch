@@ -1,0 +1,10 @@
+ARG ELS_TAG
+
+# Elasticsearch
+FROM elasticsearch:${ELS_TAG} AS els
+
+
+RUN mkdir -p /usr/share/backup/ && chown elasticsearch:root /usr/share/backup/ && mkdir /usr/share/elasticsearch/config/synonyms
+
+COPY .docker/config/elasticsearch/elasticsearch.yml /usr/share/elasticsearch/config/elasticsearch.yml
+COPY .docker/config/elasticsearch/_pdb.txt /usr/share/elasticsearch/config/synonyms

@@ -16,3 +16,7 @@ config/packages/cache.yaml
 
 docker
 docker-compose.yml
+.DS_Store
+ecom_db.sql
+compose.override.yaml
+.gitlab-ci.yml
