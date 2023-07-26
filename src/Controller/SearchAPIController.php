@@ -915,10 +915,10 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Slop
         $query = $this->queryManager->setSlop($query);
 
-        //return $query;
+        return $query;
 
-        echo '<pre>';
-        echo json_encode($query); die;
+        //echo '<pre>';
+        //echo json_encode($query); die;
     }
 
 }
