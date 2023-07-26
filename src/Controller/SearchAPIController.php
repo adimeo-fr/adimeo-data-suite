@@ -909,6 +909,12 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Remove stop words
         $query = $this->queryManager->removeStopWords($query);
 
+        // Add bool to query string
+        $query = $this->queryManager->addBoolToQueryString($query);
+
+        // Add fuzziness
+        $query = $this->queryManager->addFuzziness($query);
+
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query);
 
