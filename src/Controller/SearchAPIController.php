@@ -518,7 +518,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 if ($request->get('include_fields') != null) {
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
-
+                //file_put_contents('demo.txt', print_r($query, true)); die;
                 $query = $this->finalizeQuery($query);
 
                 try {
@@ -909,6 +909,12 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Remove stop words
         $query = $this->queryManager->removeStopWords($query);
 
+        // Add bool to query string
+        $query = $this->queryManager->addBoolToQueryString($query);
+
+        // Add fuzziness
+        $query = $this->queryManager->addFuzziness($query);
+
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query);
 
@@ -917,6 +923,7 @@ class SearchAPIController extends AdimeoDataSuiteController
 
         return $query;
 
+        //echo '<pre>';
         //echo json_encode($query); die;
     }
 
