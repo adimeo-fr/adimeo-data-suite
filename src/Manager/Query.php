@@ -55,11 +55,11 @@ class Query
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['query_string']['fuzziness'] = 'AUTO:10,20';
             $query['query']['bool']['must'][0]['query_string']['default_operator'] = 'OR';
-            $query['query']['bool']['must'][0]['query_string']['query'] = str_replace(' ', ' ~', $query['query']['bool']['must'][0]['query_string']['query']) . '~';
+            $query['query']['bool']['must'][0]['query_string']['query'] = str_replace(' ', '~AUTO ', $query['query']['bool']['must'][0]['query_string']['query']) . '~AUTO';
         } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['fuzziness'] = 'AUTO:10,20';
             $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['default_operator'] = 'OR';
-            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = str_replace(' ', '~ ', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) . '~';
+            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = str_replace(' ', '~AUTO ', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) . '~AUTO';
         }
 
         return $query;
@@ -106,9 +106,9 @@ class Query
     private function retrieveKeywordFromQuery($query, $replace = false)
     {
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
-            return $replace ? str_replace('~', '', $query['query']['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['query_string']['query'];
+            return $replace ? str_replace('~AUTO', '', $query['query']['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['query_string']['query'];
         } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
-            return $replace ? str_replace('~', '', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'];
+            return $replace ? str_replace('~AUTO', '', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'];
         }
 
         return '';
