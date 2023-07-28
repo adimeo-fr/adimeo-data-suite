@@ -354,6 +354,10 @@ class SearchAPIController extends AdimeoDataSuiteController
                                 $query['aggs'][$facet]['terms'] = array(
                                     'field' => $facet
                                 );
+                            } elseif (count($facet_parts) == 2 && in_array($facet_parts[1], ['min', 'max'])) {
+                                $query['aggs'][$facet][$facet_parts[1]] = array(
+                                    'field' => str_replace(['.min', '.max'], '', $facet)
+                                );
                             } elseif (count($facet_parts) == 2) {
                                 $query['aggs'][$facet]['nested']['path'] = $facet_parts[0];
                                 $query['aggs'][$facet]['aggs'][$facet]['aggs']['parent_count']['reverse_nested'] = [];
@@ -921,10 +925,10 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Slop
         $query = $this->queryManager->setSlop($query);
 
-        return $query;
+        //return $query;
 
-        //echo '<pre>';
-        //echo json_encode($query); die;
+        echo '<pre>';
+        echo json_encode($query); die;
     }
 
 }
