@@ -84,7 +84,7 @@ class Query
 
         foreach (explode(' ', $keyword) as $key) {
             if (trim($key) !== '') {
-                $key = rtrim($key, '~');
+                $key = rtrim($key, '~AUTO');
                 $query['query']['bool']['must'][0]['bool']['should'][0]['span_near']['clauses'][] = array(
                     'span_multi' => array(
                         'match' => array(
