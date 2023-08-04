@@ -522,8 +522,11 @@ class SearchAPIController extends AdimeoDataSuiteController
                 if ($request->get('include_fields') != null) {
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
+
                 //file_put_contents('demo.txt', print_r($query, true)); die;
-                $query = $this->finalizeQuery($query);
+                if (intval($query_string) === 0) {
+                    $query = $this->finalizeQuery($query);
+                }
 
                 try {
                     $res = $this->getIndexManager()->search($indexName, $query, $request->get('from') != null ? $request->get('from') : 0, $request->get('size') != null ? $request->get('size') : 10, $mappingName);
