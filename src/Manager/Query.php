@@ -69,17 +69,27 @@ class Query
 
     public function setAnalyzedFields($query)
     {
-        $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']["fields"] = [
+        $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['fields'] = [
             'name^10',
             'label_term_1^8',
             'label_term_2^6',
             'label_term_3^4'
         ];
-        $query['query']['bool']['must'][0]['bool']['should'][1]['query_string']["fields"] = [
+        $query['query']['bool']['must'][0]['bool']['should'][1]['query_string']['fields'] = [
             'name^10',
             'label_term_1^8',
             'label_term_2^6',
             'label_term_3^4'
+        ];
+
+        $keyword = $this->retrieveKeywordFromQuery($query, true);
+        $last = array_slice(explode(' ', $keyword), -1)[0];
+
+        $query['query']['bool']['must'][0]['bool']['should'][2]['query_string'] = [
+            'query' => strtoupper($last),
+            'fields' => [
+                'attr_taille^10'
+            ]
         ];
 
         return $query;
