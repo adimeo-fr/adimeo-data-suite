@@ -60,14 +60,14 @@ class Query
 
     public function addBoolToQueryString($query)
     {
-        if (isset($query['query']['bool']['must'][0])) {
-            $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['query_string'];
-            $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];;
-            unset($query['query']['bool']['must'][0]['query_string']);
-        } else if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
+        if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'];
             $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];
             unset($query['query']['bool']['must'][0]['bool']['must']);
+        } else if (isset($query['query']['bool']['must'][0])) {
+            $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['query_string'];
+            $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];;
+            unset($query['query']['bool']['must'][0]['query_string']);
         }
 
         return $query;
