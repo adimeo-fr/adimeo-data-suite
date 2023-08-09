@@ -60,9 +60,15 @@ class Query
 
     public function addBoolToQueryString($query)
     {
-        $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'];
-        $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];
-        unset($query['query']['bool']['must'][0]['bool']['must']);
+        if (isset($query['query']['bool']['must'][0])) {
+            $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['query_string'];
+            $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];;
+            unset($query['query']['bool']['must'][0]['query_string']);
+        } else if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
+            $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'];
+            $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];
+            unset($query['query']['bool']['must'][0]['bool']['must']);
+        }
 
         return $query;
     }
@@ -99,7 +105,9 @@ class Query
     {
         if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
             return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'];
-        } else if ($query['query']['bool']['must'][0]['bool']['should'][0]['query_string']) {
+        } else if (isset($query['query']['bool']['must'][0]['query_string'])) {
+            return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['query_string']['query'];
+        } else if (isset($query['query']['bool']['must'][0]['bool']['should'][0]['query_string'])) {
             return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query'];
         }
 

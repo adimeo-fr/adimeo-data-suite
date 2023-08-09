@@ -435,6 +435,10 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query['collapse'] = json_decode($request->get('collapse'));
                 }
 
+                if (is_null($query['collapse'])) {
+                    unset($query['collapse']);
+                }
+
                 if ($request->get('explain') != null) {
                     $query['explain'] = "true";
                 }
