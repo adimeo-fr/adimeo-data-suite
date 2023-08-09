@@ -20,15 +20,6 @@
   {%endif%}
   -->
   {%if engine_response is defined%}
-
-    {% if facets is defined %}
-    <div class="widget">
-      <div class="widget-title">{% trans %}Facets{% endtrans %}</div>
-      <div class="widget-content">
-        <div class="facets">{{ facets|raw }}</div>
-      </div>
-    </div>
-    {% endif %}
     <div class="widget">
       <div class="widget-title">{% trans %}Query results{% endtrans %}</div>
       <div class="widget-actions">
@@ -90,7 +81,14 @@
   {%if exception is defined%}
     {{exception}}
   {%endif%}
-
+  {% if facets is defined %}
+    <div class="widget">
+      <div class="widget-title">{% trans %}Facets{% endtrans %}</div>
+      <div class="widget-content">
+        <div class="facets">{{ facets|raw }}</div>
+      </div>
+    </div>
+  {% endif %}
   {%if list is defined%}
   <div class="widget">
     <div class="widget-title">{% trans %}Saved queries{% endtrans %}</div>

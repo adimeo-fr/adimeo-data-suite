@@ -52,63 +52,63 @@ class Query
 
     public function addFuzziness($query)
     {
-        if (isset($query['query']['bool']['must'][0]['query_string'])) {
-            $query['query']['bool']['must'][0]['query_string']['fuzziness'] = 'AUTO:10,20';
-            $query['query']['bool']['must'][0]['query_string']['default_operator'] = 'OR';
-            $query['query']['bool']['must'][0]['query_string']['query'] = str_replace(' ', '~AUTO ', $query['query']['bool']['must'][0]['query_string']['query']) . '~AUTO';
-        } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
-            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['fuzziness'] = 'AUTO:10,20';
-            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['default_operator'] = 'OR';
-            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = str_replace(' ', '~AUTO ', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) . '~AUTO';
-        }
+        $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query'] = str_replace(' ', '~ AND ', $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query']) . '~';
+        $query['query']['bool']['must'][0]['bool']['should'][1]['query_string']['query'] = str_replace(' ', '~ OR ', $query['query']['bool']['must'][0]['bool']['should'][1]['query_string']['query']) . '~';
 
         return $query;
     }
 
     public function addBoolToQueryString($query)
     {
-        if (isset($query['query']['bool']['must'][0]['query_string'])) {
-            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'] = $query['query']['bool']['must'][0]['query_string'];
+        if (isset($query['query']['bool']['must'][0])) {
+            $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['query_string'];
+            $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];;
             unset($query['query']['bool']['must'][0]['query_string']);
+        } else if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
+            $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'];
+            $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];
+            unset($query['query']['bool']['must'][0]['bool']['must']);
         }
 
         return $query;
     }
 
-    public function setSlop($query)
+    public function setAnalyzedFields($query)
     {
-        $keyword = $this->retrieveKeywordFromQuery($query);
+        $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['fields'] = [
+            'name^10',
+            'label_term_1^8',
+            'label_term_2^6',
+            'label_term_3^4'
+        ];
+        $query['query']['bool']['must'][0]['bool']['should'][1]['query_string']['fields'] = [
+            'name^10',
+            'label_term_1^8',
+            'label_term_2^6',
+            'label_term_3^4'
+        ];
 
-        $query['query']['bool']['must'][0]['bool']['should'][0]['span_near']['slop'] = 2;
-        $query['query']['bool']['must'][0]['bool']['should'][0]['span_near']['in_order'] = false;
+        $keyword = $this->retrieveKeywordFromQuery($query, true);
+        $last = array_slice(explode(' ', $keyword), -1)[0];
 
-        foreach (explode(' ', $keyword) as $key) {
-            if (trim($key) !== '') {
-                $key = rtrim($key, '~AUTO');
-                $query['query']['bool']['must'][0]['bool']['should'][0]['span_near']['clauses'][] = array(
-                    'span_multi' => array(
-                        'match' => array(
-                            'fuzzy' => array(
-                                'label' => array(
-                                    'value' => $key,
-                                    'fuzziness' => 'AUTO'
-                                )
-                            )
-                        )
-                    )
-                );
-            }
-        }
+        $query['query']['bool']['must'][0]['bool']['should'][2]['query_string'] = [
+            'query' => strtoupper($last),
+            'fields' => [
+                'attr_taille^10'
+            ]
+        ];
 
         return $query;
     }
 
     private function retrieveKeywordFromQuery($query, $replace = false)
     {
-        if (isset($query['query']['bool']['must'][0]['query_string'])) {
-            return $replace ? str_replace('~AUTO', '', $query['query']['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['query_string']['query'];
-        } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
-            return $replace ? str_replace('~AUTO', '', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'];
+        if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
+            return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'];
+        } else if (isset($query['query']['bool']['must'][0]['query_string'])) {
+            return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['query_string']['query'];
+        } else if (isset($query['query']['bool']['must'][0]['bool']['should'][0]['query_string'])) {
+            return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query'];
         }
 
         return '';

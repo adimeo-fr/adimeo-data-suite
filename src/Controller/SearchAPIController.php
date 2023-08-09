@@ -142,7 +142,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 } else {
                     $query['query']['bool']['must'][0]['query_string'] = array(
                         'query' => $query_string,
-                        'default_operator' => $defaultOperator,
+                        //'default_operator' => $defaultOperator,
                         'analyzer' => $request->get('analyzer') != null ? $request->get('analyzer') : 'standard',
                         'fields' => $analyzed_fields
                     );
@@ -327,7 +327,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                         } else {
                             $query['query']['bool']['must'][]['query_string'] = array(
                                 'query' => $qs_filter['field'] . ':"' . $qs_filter['value'] . '"',
-                                'default_operator' => $defaultOperator,
+                                //'default_operator' => $defaultOperator,
                                 'analyzer' => $request->get('analyzer') != null ? $request->get('analyzer') : 'standard',
                                 'fields' => array($qs_filter['field'])
                             );
@@ -433,6 +433,10 @@ class SearchAPIController extends AdimeoDataSuiteController
 
                 if ($request->get('collapse') != null) {
                     $query['collapse'] = json_decode($request->get('collapse'));
+                }
+
+                if (is_null($query['collapse'])) {
+                    unset($query['collapse']);
                 }
 
                 if ($request->get('explain') != null) {
@@ -919,14 +923,14 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Add bool to query string
         $query = $this->queryManager->addBoolToQueryString($query);
 
+        // Set analyzed fields
+        $query = $this->queryManager->setAnalyzedFields($query);
+
         // Add fuzziness
         $query = $this->queryManager->addFuzziness($query);
 
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query);
-
-        // Slop
-        $query = $this->queryManager->setSlop($query);
 
         return $query;
 
