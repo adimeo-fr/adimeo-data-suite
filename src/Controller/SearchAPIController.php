@@ -117,7 +117,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                         'fields' => $analyzed_fields
                     );
                     if (!$this->getIndexManager()->isLegacy()) {
-                        $tmpQuery['type'] = 'cross_fields';
+                        //$tmpQuery['type'] = 'cross_fields';
                         $tmpQuery['lenient'] = true;
                     }
                     $query['query']['bool']['must'][0]['bool']['should'][]['query_string'] = $tmpQuery;
@@ -134,7 +134,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                             )
                         );
                         if (!$this->getIndexManager()->isLegacy()) {
-                            $nested_query['query']['query_string']['type'] = 'cross_fields';
+                            //$nested_query['query']['query_string']['type'] = 'cross_fields';
                             $nested_query['query']['query_string']['lenient'] = true;
                         }
                         $query['query']['bool']['must'][0]['bool']['should'][]['nested'] = $nested_query;
@@ -147,7 +147,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                         'fields' => $analyzed_fields
                     );
                     if (!$this->getIndexManager()->isLegacy()) {
-                        $query['query']['bool']['must'][0]['query_string']['type'] = 'cross_fields';
+                        //$query['query']['bool']['must'][0]['query_string']['type'] = 'cross_fields';
                         $query['query']['bool']['must'][0]['query_string']['lenient'] = true;
                     }
                 }
