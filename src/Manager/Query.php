@@ -36,7 +36,7 @@ class Query
 
     public function setPinnedDocuments($query)
     {
-        $keyword = $this->retrieveKeywordFromQuery($query, true);
+        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
 
         $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'pinned.json'), true);
 
@@ -52,8 +52,7 @@ class Query
 
     public function addFuzziness($query)
     {
-        $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query'] = str_replace(' ', '~ AND ', $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query']) . '~';
-        $query['query']['bool']['must'][0]['bool']['should'][1]['query_string']['query'] = str_replace(' ', '~ OR ', $query['query']['bool']['must'][0]['bool']['should'][1]['query_string']['query']) . '~';
+        $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['query'] = str_replace(' ', '~ ', $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['query']) . '~';
 
         return $query;
     }
@@ -61,12 +60,10 @@ class Query
     public function addBoolToQueryString($query)
     {
         if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
-            $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'];
-            $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];
+            $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string'] = $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'];
             unset($query['query']['bool']['must'][0]['bool']['must']);
         } else if (isset($query['query']['bool']['must'][0])) {
-            $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'] = $query['query']['bool']['must'][0]['query_string'];
-            $query['query']['bool']['must'][0]['bool']['should'][1]['query_string'] = $query['query']['bool']['must'][0]['bool']['should'][0]['query_string'];;
+            $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string'] = $query['query']['bool']['must'][0]['query_string'];
             unset($query['query']['bool']['must'][0]['query_string']);
         }
 
@@ -75,23 +72,23 @@ class Query
 
     public function setAnalyzedFields($query)
     {
-        $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['fields'] = [
+        $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
             'name^10',
             'label_term_1^8',
             'label_term_2^6',
             'label_term_3^4'
         ];
-        $query['query']['bool']['must'][0]['bool']['should'][1]['query_string']['fields'] = [
+        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
             'name^10',
             'label_term_1^8',
             'label_term_2^6',
             'label_term_3^4'
         ];
 
-        $keyword = $this->retrieveKeywordFromQuery($query, true);
+        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
         $last = array_slice(explode(' ', $keyword), -1)[0];
 
-        $query['query']['bool']['must'][0]['bool']['should'][2]['query_string'] = [
+        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string'] = [
             'query' => strtoupper($last),
             'fields' => [
                 'attr_taille^10'
@@ -101,14 +98,14 @@ class Query
         return $query;
     }
 
-    private function retrieveKeywordFromQuery($query, $replace = false)
+    private function retrieveKeywordFromQuery($query, $replace = false, $property = 'query_string')
     {
-        if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
-            return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'];
-        } else if (isset($query['query']['bool']['must'][0]['query_string'])) {
-            return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['query_string']['query'];
-        } else if (isset($query['query']['bool']['must'][0]['bool']['should'][0]['query_string'])) {
-            return $replace ? str_replace(['~ AND', '~'], '', $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query']) : $query['query']['bool']['must'][0]['bool']['should'][0]['query_string']['query'];
+        if (isset($query['query']['bool']['must'][0]['bool']['must'][0][$property])) {
+            return $replace ? str_replace(['~'], '', $query['query']['bool']['must'][0]['bool']['must'][0][$property]['query']) : $query['query']['bool']['must'][0]['bool']['must'][0][$property]['query'];
+        } else if (isset($query['query']['bool']['must'][0][$property])) {
+            return $replace ? str_replace(['~'], '', $query['query']['bool']['must'][0][$property]['query']) : $query['query']['bool']['must'][0][$property]['query'];
+        } else if (isset($query['query']['bool']['must'][0]['bool']['should'][0][$property])) {
+            return $replace ? str_replace(['~'], '', $query['query']['bool']['must'][0]['bool']['should'][0][$property]['query']) : $query['query']['bool']['must'][0]['bool']['should'][0][$property]['query'];
         }
 
         return '';
