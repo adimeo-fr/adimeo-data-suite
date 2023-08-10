@@ -73,16 +73,16 @@ class Query
     public function setAnalyzedFields($query)
     {
         $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
-            'name^10',
+            'name^10'/*,
             'label_term_1^8',
             'label_term_2^6',
-            'label_term_3^4'
+            'label_term_3^4'*/
         ];
         $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
-            'name^10',
+            'name^10'/*,
             'label_term_1^8',
             'label_term_2^6',
-            'label_term_3^4'
+            'label_term_3^4'*/
         ];
 
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
