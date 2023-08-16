@@ -14,6 +14,11 @@
     </div>
 
   {%endif%}
+  {% if engine_response is defined %}
+    {% for hit in engine_response.hits %}
+      {{  hit._source.name  }}<br>
+    {% endfor %}
+  {%endif%}
   <!--
   {%if results is defined%}
     {{results|raw}}

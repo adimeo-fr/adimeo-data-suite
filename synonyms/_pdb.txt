@@ -1,554 +1,78 @@
-cib, bic
-olyts, stylo
-brosses pour meuleuses,brosses, brosse
-plateau de surfaçage pour meuleuses,Plateau de surfaçage
-pour meuleuses,accessoires pour meuleuses
-lampe,lampe,ampoule
-sources,sources,ampoule
-batterie,batteries,batteries,accumulateur 
-bombe,bombe,aérosol,protection galvanisante,traçage
-monosplit,monosplit,climatiseur
-multisplit,multisplit,climatiseur
-climatiseur,climatiseur,climatisation
-climatiseur,air,oxygène
-signalisation,signalisation,balisage
-antidérapants,bande ponçage,bande antiderapante
-gilets,gilets,chasubles
-baignoires,baignoire ,baignoire,balneotherapie 
-douche,douches ,douche,balneotherapie 
-douchette,douchettes ,douchette,balneotherapie 
-bac,bacs,receveurs,receveur,bacs,bac a douche,bac douche
-barres,barres,barres de seuil
-chevilles,fixation,chevilles
-vis,fixation,vis
-colle,colles,fixation,colles
-écrous,fixation,écrous
-ciseaux,ciseaux,cisailles
-pointes,pointes,clous
-raccords,raccords,colliers
-cordons,cordons,connectiques
-mosaique,mosaique,crédence
-galets,galets,credence
-dégraissant,dégraissant,détergent
-chariot,chariot,diable
-bornes automatiques,bornes automatiques,dominos
-isolation,isolation,doublage
-laser,laser,équerre
-pipes,pipes,évacuations
-filasse,filasses,filasse,joint,étanchéité
-filtre,filtres,filtre,protection
-graisses,graisse,graisse,lubrifiants
-imperméabilisation,drainage,protection
-combinaison,combinaisons,combinaison,imperméable
-imperméable,imperméable,pluie
-kit audio,interphone,kit audio
-kit vidéo,interphone,kit vidéo
-audio vidéo,vidéophone,audio vidéo
-essui tout,essuie tout,essuietout,bobines,propreté,essui tout,essuie tout,essuietout
-interrupteurs,interrupteur,interrupteurs,appareillages,détendeurs
-isolants,isolants,isorupteurs
-karcher,karcher,nettoyeur,pompe,surpresseur
-,kitchenette,kitchenettes,cuisinettes,cuisinette
-lumière sécurité,lumière sécurité,technologie
-éclairages,éclairage,éclairage,luminaire
-spot,spots,spot,luminaire,éclairage
-halogène,halogènes,halogènes,luminaire
-appareillages,appareillages,mécanismes,céliane,celiane
-brosse,brosses,ménage,brosse
-hygiène,ménage,hygiène
-mètres,mètre,mètres,mesures
-modulaire,modulaire,modules
-tubes fluorescents,tube fluorescent,tubes fluorescent,tube fluorescents,tubes fluorescents,néons,neon
-réflecteur,réflecteurs,néons,réflecteur
-ouverture,motorisation,ouverture
-béton,béton,parpaing
-cloison,cloisons,cloison,placo
-plafond,plafonds,plafond,placo
-placo,placos,placo,cloison,plafond
-collectivité,collectivité,plonge
-plot,cone,plot,cone,signalisation
-poignées,poignée,serrurerie,quincallerie,poignées
-fiches,fiche,prises,prise,prises,fiches
-purificateurs,purificateur,traitement,air,purificateurs
-radiateurs,radiateur,chauffage,radiateurs,radiateurs electriques
-mesure courte,mesures courtes,mesures courte,règle,mesure courte
-mesure longue,mesures longues,mesures longue,règle,mesure longue
-régulateurs thermostatique,régulateur thermostatique,régulateurs thermostatique,régulations
-robinet,robinet,robinetterie,douchette
-porte outils,sacoche,porte outils
-scie,scie,lame
-tablette,tablette,plans,etagere
-rangement,rangement,valise
-systainer,systainer,valise
-organiseur,organiseur,valise
-volets,volets,persiennes
-entretoise,entretoise,boulon,écrou
-montants,tapée,ossature
-map,mortier
-festool,festool,ponceuse
-radiateurs,radiateurs,purgeurs
-geberit,reservoir
-solin,solin,bandes,enduit
-f530,liaison
-cuve,cuve,bétonniere
-malaxage,malaxage,bétonnière
-m48,m48,montants
-silicone,silicone,joint 
-ro2v,ro2v,cable
-croma,croma,douche,anticalcaire
-icta,icta,gaine
-plaque plâtre,plaque plâtre,panneau spécial,ba13,ba 13
-panneau spécial,plaque plâtre,panneau spécial,ba13,ba 13
-ba13,plaque plâtre,panneau spécial,ba13,ba 13
-,adhésif,scotch
-,caisse outils,caisses outils,boite outils,bte outils,sac outils,sacs outils
-gilet,gilet,vêtements
-veste,parka,veste,vêtements
-parka,parka,veste,vêtements
-produits,produit,entretien,produit
-meuble,meubles,meuble,rangement
-rangement,rangements,meuble,rangement
-ragréage,réagréage,reagreage,réagreage,reagréage,regreage,ragréage,réagréage
-map,mortier adhésif,map
-cumulus,cumulus,ballon
-Siporex,Siporex,béton cellulaire
-pf3,pf 3,Colles PLACOL,pf3,pf 3,Colles PLACOL
-gravier,graviers,gravier,gravillon
-colonnes de douche,colonne de douche,combiné de douche,combinés de douche,combiné de douche,colonne de douche
-dressing,aménagement,placard 
-vmc,vmc,ventillation,mécanique
-gtl,gtl,goulotte,gaine technique
-porte entrée,portes entrée,porte exterieur,porte entrée
-pf3,pf 3,Colles PLACOL,pf3,pf 3,Colles PLACOL
-film,polyane,poliane
-ossature,lisse optima
-meuleuse,disqueuse
-echelle,girafe
-dalle de plafond,"dalle faux plafond,faux plafond"
-mobilite,wc handicap
-sonnerie,sonnette,sonette,sonete,sonnete
-tirefond,tire fond
-main courante,rambarde
-marchepied,marchepieds,escabeau,marchepied,escabo,escabau,escabot
-escabeau,escabeaux,escabeau,marchepied,escabo,escabau,escabot
-disjoncteur,dijoncteur
-sertissage,sertisseuse
-rambarde,rembarde
-siphon de sol,syphon de sol
-portes coulissantes,galandage
-seau,sceau
-colliers,colson
-grohterm,grotherm
-scies cloches,cloche
-coffret scie,cloche
-tige filetée,tige filtée,tige filté
-polystyrene,polystirene,polistirene,polistyrene
-tréteaux,trétaux
-Velux,Fenêtre de toit,raccordement d'étanchéité,racordement
-Nourice,Nourisse,Collecteur
-Gamate,Auge,Auges
-schneider, schnieder, schnaidaire, schnider
-legrand, legren, legran, legrent, legrant, legran
-terreal tuiles lambert, tereale tuile lenbert, tairaial tulle lanbair, tereal tuilles lember
-accumulateur, accumulateursworms, vorms, wormse
-rubson, rubsone, rubsson, rubsonne
-roulor, roulaur, roulore, roullore, roullor
-nevax, naivax, nevacks, naivacks
-rehau, reo, raihau, raiho, reho
-stanley , stanlai, stanlay, stenlay, stenlaie
-wavin, vavin, wavun, vavun
-benthor, bintor, bentor, benthore
-thermor, termor, termore, tairemore, tairmaur, termaure
-cegecol, cejecol, cegecole, segecol, sejecole, cejaicol, sejaicol
-parexlanko, paraixlanko, paraixlanco, parexlenko, parexlenco, parexlainco,
-standarm, stendarme, standarme, stendarm
-ventil'distribution, vantildistribution
-bitron video, bitron vidaio, bitro video, bitro vidaio
-vigouroux, vigourou, vigorou, vigouro, vigourox
-gpl, jpl
-diager, diagere, diagair, diajer
-taliasplast, taliasplaste, talia plast, taliaplat
-norton clipper, norton cliper, norton clipere, norton clippair, norton clippaire
-regno, ranio
-comap, komap, comape, komape
-sferaco, sferacco, sfairaco, sfairacco, spheraco
-roth, rot 
-wirquin, wirqin, wirkun, wirkin, virquin, virqun, virqin, virkun
-française des compteurs, francaise des comteurs, francaise des conteur, fransaice des compteurs, fransaise des comteurs, fransaise des conteurs,
-pradel miroiterie, pradel miroiteri, pradail miroiteri, pradel miroitri, pradaile miroitri
-stanley Bostitch, stanlei bostitch, stanlai bostitch, stenley bostich, stanlei bostich, stenlei bostich
-stradal, tradal, sadral
-acova, acauva, accova
-panaget, panagait, panages, panagais, panagai, pannaget
-abac France, abac France, abac franse
-c.2.r (rosa), c2r
-sifisa, sifiza, siffisa, siffiza
-dewalt, devalt, deuvalt, deuwalt
-mat inter, matinter, mat intere, mat intair, mat intaire
-mts ariston sa, mts aristone sa, mts arriston sa, mts irristone sa
-trefimetaux, trefimeto, traifimetau, trefimetau, traifimeto, traifimetaux
-velux, vailux, veluxe, vailuxe
-fermacell, fermacelle, fermasselle, fermasell, fairmacelle, fairmacel
-glasco, glascau, glassco, glasscau
-compagnie des sablières la seine, compagnie des sabliaires la seine, compagni des sabliere la saine, compani des sabiere la seine, compani des sabliere la saine
-sebico, saibico, sebicco, saibicco
-sika, siqua, siqa, sica
-chabanne, chabane, shabane, chabbane
-taliasplast, taliasplaste, talia plast, taliaplat
-delta pro, dailta pro, tailta praux, dailta prau, delta prau
-blanchon, blamchon, blanshon
-corderie sainte germaine, corderi sinte germaine, corderi sinte jermaine, corderie seinte germaine, corderi seinte jermaine
-isobox plâtre lambert, isobox platre lember, izobox platre lember, isobox platre lambair, isobox platre lembert
-siplast, siplaste
-vachette assa abloy, vachaitte ASSA ABLOI, vachette ASA ABLOI, vachete ASSA ABLOI
-tuileries huguenot fenal, tuileri hugeno fenal, tuileri ugeno fainal, tuileri ugeno fenale
-plf megnien industrie, plf megnian 
-rheinzink, rainzink, rinzink, rhinzink, rinzinque, rezinque
-placoplatre, placaupatre, plakoplatre, plaqoplatre
-vynex, vinex, vinaix, vynaix
-sofoc, sofoque, sofok, saufoc, saufok, saufoque
-elm leblanc, elm leblen, elm leblan
-climadecor, climadaicor, klimadecor climadecore
-arnould, arnoul, arnoulde
-jacob delafon, jakob delafon, jaqob delafon, jacobe delafon
-outil parfait, outille parfai, outil parfai
-toupret pro, tout prêt pro, touprait pro, touprai pro
-menuiserie p.v.c. g.m gayrard, gairar
-carofrance, carofranse
-prestonett, prestonette, praistonete, praistonnette
-rubi, ruby
-dyrup, dirup
-comptoir general des fontes, comtoir generale des fonte, contoir general des fonte, contoir gainairale des fonte 
-graco, gracau, grako, graquo
-grohe, groe, gro, groh, graue
-ppg architectural ripolin, ripaulin
-jpm, gpm
-weser, wezer, waiser, waizer, wesere, wezere, waisere, waisaire, waizaire
-karcher, carcher, carchere, karchere, quarcher, quarchere, carchaire, carchair
-onduline, enduline
-tramico, tramiko, tramiquo, tramiqo
-air liquide, ere liquide, air likide, air likid, ere likide
-alkern, alkerne, alkairne 
-axter, axtere, axtaire, axtair
-gebo, gaibo
-isoroy, isoroi
-schneider electric, schnieder elaictric, schnaidaire, schnider
-gewiss, gewisse, geviss, jewiss, jewisse, gewisse
-nordlinger, norlunger, norlinger
-robin, robun
-sacla euro protection, sacla euro protaiction, sakla euro protection
-denuziere outifrance, denuziaire outifrance
-sogem, sojem, sojaime, sogaime, sogeme
-saunier duval chauffage, sonier duval chofage, saunier duval chofage
-makita, maquita, makitta
-mob outillage, maub outillage
-dinac, dinak, dinaque
-klauke, kloke, clauque, clauke, cloque
-lahera, lahaira, laera
-brugman, brugmen, bruguemane, brugmane
-energizer, enairgizer, enerjizer, energizair, energiser, enerjiser, enerjaizer
-cedist, sedist, cediste, sediste, saidist
-point p, POIN P
-monier, maunier
-eural, eral
-aurelia, orelia, aurailia, orailia
-thermor, termor, tairmor, thairmore
-ilcar, ilquar, ilcare
-maronagres, maronagre
-comus, komus, quomus
-socli, sokli
-imerys toiture, imeris toiture, imeris toitur
-lafarge platre, lafarje platre
-eveno sa, evenau SA
-vieille montagne, viaille montagne, vieil montagne
-isover, isovair, isovere, izover, izovaire
-autogyre, autojyre, autojire, otogyre, otojire
-balneo, balnaio, bal neo
-godart, godar
-came, cam, kame, kam, quame
-roofline, rofline
-charpentes eurl, charpante EURL, sharpente EURL, sharpante EURL
-gimm menuiseries, gim menuiseri
-fischer fixation, ficheir fixation, fishere fixation, ficher fixassion, fisher
-simpson, simson, simsone
-lahfer sarl, lafer SARL, lapher SARL, laffere SARL
-siat braun, siat braune, siat brone
-ubbink, ubink, ubunk, ubinque, ubunque
-henrad, enrad, hanrad, henrade, hanrade
-poujoulat, poujoula 
-setma, saitma
-tordjman metal, torjmanne metal, torjmann metal, tordjmane metal, torjmann maital
-bostik findley, bostique findley, bostik findlai, bostik findlei, bostique findlai
-hansgrohe, hensgroe, hensgro, hansgro
-egger, eggair, aggere
-groom, grom
-tractel, tractail, tractele, tractelle
-chauvin arnoux, chovin arnou, chovun arnou
-maec, maeque, maek
-kramer robinetterie, cramer robineterie, kramere robineterie, kramaire robinetteri
-novipro, nauvipro
-hecquet, haicquet, equet, equai
-lefebvre industrie, lefevre industri, lefaivre industri
-roca, rauca
-koramic tuiles, coramic tuiles, coramique tuiles
-apolo, apaulo, apolau
-abus, abu
-coffres-forts solon, cofre for solon
-renz, ranz
-monnet seve, monait seve, monai saive
-somalu, saumalu
-hitachi, itachi, itachy
-tooltechnic systems, tolteknic sisteme,taulteknik système
-wolfcraft, wolcraft, olfcraft
-novipro, nauvipro
-cuisinord, cuisinaur, cuisinor, cuizinor
-noirot, noiro,noirau
-gauthier, gautier, gotier
-oran, oren, auran
-monnerie, moneri, mauneri
-bourgeois decoration, bourgeoi decoration, bourgeois decorassion
-sermes, sairme
-someag-opi, saumeag, somaiag
-lussiana, luziana, lusiana
-caprofem, caprofaime, caprofaim, caprofeme
-cemex, cemaix, semex, saimaix
-skil, squil 
-kapriol, capriol, kapriole, quapriol, capriole
-danfoss, denfosse, danfosse
-silec cables, silaic cable, sileque cable
-nevelt, nevailt
-sanyo, sanio
-bonifay sa, bonifai SA
-basic segment sgdb, bazic segmen, basic saigment, basic saigman
-armstrong, amstrong
-gys, gis, jis, jys
-meubles demeyere, meuble demaiyere, meuble demelliere, meuble demelliaire
-sunclear, sunclair, suncleare
-theard, teard
-flash, flache, flach
-gripp, grip
-fagor, fagaur, fagore
-adfors, adfaurs
-globe export, globe aixport, globe expaur
-cibomat, cibaumat, sibomat, sibomate
-sonen point p, sonene point P, sonaine point P
-klein agglomeres, klein aglomere, klain aglomaire, klein aglomaire
-armaturentechnologie, armaturantecknologie, armaturentaicknologie, armaturentechnologi
-comptoir picardie, comtoir picardie, contoir picardi
-domino, daumino
-alto, altau
-luminox, luminaux, luminocs
-desi, dezi, daisi
-technibel, tecknibel, taichnibel, taiknibel
-jeldwen france, jaildwen, jaildwain, jeldwain
-eyrolles, airolle, erolle, erole, airole
-timberland, timbairland, timberlend
-facom, facaum, fakom
-klober, klobair, clobair, clober
-nord ceram, nor ceram, nor seram, nor sairam
-imerys toiture, imeris toiture, imeris toitur
-acistim, asistim, acistime, assistime
-dip peinture, dip painture, dip peintur
-novipro, nauvipro, noviprau
-lapierre & fils, lapiere et fis, lapierre et fis
-cime, sime
-freefoam, frefoam, fraifoam
-guittet peinture, guitai peinture, guitet painture, guitet peinture 
-isocele, isosaile, izocele, izosaile
-henreich b, enrech b, enraich b
-cedeo les ulis, sedeo les ulis, saideo les ulis 
-legrand, legran, legren
-lumipro, lumiprau
-robin, robain, robun, raubin, raubun
-parquets marty, parket marti, parkai marti, parquer marti
-tubesca, tubaisca, tubeska, tubaiska
-delabie, deulabi, delabi
-rockwool batiment, rocwol batiment, rocwool batiman, rocwol batimen, rokwol batiment
-actis, actisse
-saverbat, savairbat, saverbate, savairbat, savairbate
-saint-gobain vitrage, sin gobin vitrage, sin gobin vitraje
-dirickx, dirics, dirix, dirikx, diricx, diric
-mft dallage, mft dalage, mft dalaje
-novipro, nauvipro, noviprau
-ets faynot, ets faino, ets fayno, ets fenau
-wago, vago, wagau 
-cofrel, cofrail, caufrel, cofrelle
-franke, franque, frenke
-cemex, semex, saimex, cemaix
-briqueterie du nord, briketeri du nor, briketeri du naur, briqueteri du nor
-mapei, mapai
-krieg et zivy, krig et zivi, crieg et zivi, crig et zivi 
-haemmerlin, emerlin, aemerlun, aemerlin,
-zinsser, zunser, zinsair
-cemex, semex, saimex, cemaix
-la nive, la niv, laniv
-pacema sas, pasema SAS, pasaima SAS
-les betons du garlaban, les betons du garlaben
-fly ceramics, fly seramic, fli ceramic, fli seramic, fli sairamic, fly seramique
-protool, protol, prautol, protolle
-plombelec, plonbelec, plonbailaic, plonbelaic
-armaturentechnologie
-capri, kapri
-cavers, caver, cavair, cavere
-lafarge ciments, lafarje ciment
-brun et doutte, brin et doute, brun et doute
-metalux, maitalux, metalucs
-sabliere garonne, sablair garone, sablier garaune
-l'industrielle sedan, lindustriel seden
-holcim, olcim, olcime, olsime, aulsime
-plein gaz, plin gaz, plain gaz
-scrigno, scrignau, crigno
-deko, deco, dekau
-carrieres la madeleine, cariere la madelaine
-roshop, rochop, rauchop, rochaup
-scrigno, scrignau, crigno
-fagor, fagaur, fagore
-rothenberger, rotenberger, rautenberger, rotanberjer, rotanberger, rotenberjer
-giacomini, jiacomini, giacaumini
-mauer cantilana, moer cantilana, mauer quantilana
-pradel, pradail, pradelle
-rehau, reho, raihau
-efisol, aifisol, efisolle, efisaule
-kaufel, caufel, kofel, cofel
-selles, sele, saile
-atole, atol, ataule
-brennensthul, brenenstul, brainenstul, brenanstul
-godart promo, godar promo
-ytong, itong
-atmos, atmose
-benetiere, benetiaire, bainetiere
-tubauto, tuboto
-reflectiv, raiflective, raiflaictive, reflaictive
-vitra, vitra
-somfy, somfi, saumfi
-huber, uber, ubair
-alutrade, alutrad
-kerateam, keratem, cerateam, queratem, kerataim
-schluter systems, chluter sistem, chlutair sisteme
-norfix, naurfix
-eternit, etairnit
-siamp, sianp, siemp, sienp 
-james hardie, jaimes ardi, jame ardi 
-geberit, gaiberit, jeberit
-campa, cempa, kampa, quampa, canpa
-yokis, iokis
-hoppe france, ope France
-burger, burjer
-tordjman metal, torjmanne metal, torjmann metal, tordjmane metal, torjmann maital
-gimm menuiseries, gim menuiseri
-sig languedoc, sig langedoc, sig lengedog
-cemex, semex, saimex, cemaix
-bodard, baudar
-calcaires regionaux, calcaire rejiono, calcaire rejiaunau, calcaire regiauno
-auto rectif, oto raictif, auto raictif
-crosnier, crausnier
-ea noisy, EA noisi
-roth, rot, raut 
-actana, aktana
-polar, paular
-baudry, bodri, baudri, bodry
-simaca sa, simaca SA
-actana, aktana
-euro pierres, euro pier
-setma, saitma
-collomix, colomix, caulomix, colaumix, caulaumix
-moderna france sas, modairna France SAS, mauderna France SAS
-betonor, betonaur, betaunaur
-dulary, dulari
-franke, franque, frenke
-stoneskin, stonaiskin, staunaiskin
-element system, elemen sistem, elaimen sistem, ailaiman sistaim
-resipro, rezipro, raisipro
-leman, lemen
-friedland sas, friland, freland
-accemat, acemat, asemat, assemat
-chaux et enduits st astier, cho et endui st astier
-frina, phrina, frina
-fermettes du midi, fermete du midi, fairmaite du midi, fairmete du midi
-totem, totaim, tautem, tautaim
-perasso, peraso, pairasso, pairaso
-vicat ciments, vica simen
-unitec, unitaic
-sas granor, sas granaur
-clipper, cliper
-nord ceram, nord seram, nor sairam
-sovelor, sauvelor, sauvelaur, sovelaur
-clinique du materiel, clinic du materiel, clinic du matairiel
-benedetti chauvet, benedeti chovet, bainaideti chovai
-noyon et thiebault, noyon et thiebo
-cada, kada
-lazer, laser, lazair, lasair
-genius, jenius
-invicta, unvicta
-le plomb français, le plon francais, le plon fransai
-guittet peinture, guitet pinture
-saint-gobain vitrage, sin gobin vitrage, sin gobin vitraje
-seac, saiac
-guard industrie, gar industri, gare undustri
-raw materials, rau materiel, ro materiel
-sicli, sikli
-alterna, altairna
-thyssenkrupp cadillac plastic, tissen krup cadiak plastic, tyssen crup cadillac plastique
-dispano, dispanau
-saunier duval, sonier duval 
-evenplast, aivenplast
-soprema, sopraima, sauprema, saupraima
-ermapro, ermaprau, airmaprau, airmapro
-manufor, manufaurn, manufore
-tooltechnic systems, tolteknic sisteme,taulteknik système
-locapeint, locapin, locapun
-holcim, olcim, olcime, olsime, aulsime
-lafarge granulats, lafarje granula
-silices et refractaires, silise et refractere, cilice et refractere
-aquamate, aqoimate, akoimate, aquoimate
-vandersanden, vendersenden, vandersenden, vandersendan
-acova, acauva, akova, akauva
-ligerienne granulats, lijeriene granula, ligeriaine granula
-sentinel, santinel, santinail, santinelle, sentinelle
-dubois materiaux, duboi materio, duboi materiaux
-flexim, flaixim, flecsim
-lt aqua +, LT aquoi +, LT akoi +
-novipro, noviprau, nauvipro, nauviprau
-novoplastic, novauplastic, nauvauplastic, novoplastique
-supra, soupra
-woodever, wodaivair, wodaiver, wodevair
-roziere, roziaire, rauziere
-lafarge granulats, lafarje granula 
-basic segment sgdb, bazic segmen, basic saigment, basic saigman
-aojin, aujin, ojin, aojun
-sage, saje
-heibei gold guangyuan group co ltd, ebe gold ganguan group co LTD
-nexans, naixan, naixen, nexen
-scorev, scaurev, scoraiv
-swisler, suisler, swislair, suislair
-swell, swail, swel
-anhui textiles development imp.&exp, anui textile 
-osmose, osmoz, ausmose, ausmoze, osmoze
-chaux michel boehm et cie, cho michel boem et ci
-emaver, emavair, aimaver
-valorpal systems, valaurpal sistem, valorpal sistem
-charpentes eurl, charpante EURL, sharpente EURL, sharpante EURL
-soppec, sopec, sopaic, saupaic, saupec, sopek
-logistoc, logistauc, laugistoc, laugistauc
-dubois materiaux, duboi materio, duboi materiaux
-shangai electricals, changai electrical
-monopy, monopi, maunaupi, monaupi, maunopi
-Chant Plat, champ plat, champlat, chanplat, chanpla
-polyéthylène, PE, P-E, P.E., pe, polietilaine, polyethylène, polyethilaine
-Nappe de protection, delta ms
-Couvre-mur, couvre mur, couvr mur, couvre mure
-Big bag, bigbag, bibag
-sac à gravats, sac a grava
-Detecteur de fumée, daaf
-Contrôle d'accès, digicode, code de porte, clavier codé, code
-Bosch, boch, baush, bauche, bosh
-parpaing, parpaings, parpin, parpain
-wedi, waidi, wedy ,  weidi, weidy, waidy, weidy, widi, wedi
-déshumidificateur, desumidificateur
-Mousse expansive, Mousse expensive
-hilti, ilti, Hylti, Hilty, ylti, hylty
-alarme, détection,sirène,diffuseur sonore
-toilettes,wc,chiotte
-adhésif,scotch
-caisse outils,caisses outils,boite outils,bte outils,sac outils,sacs outils
-kitchenette,kitchenettes,cuisinettes,cuisinette
+BA13,gypse, cloison, plaque de platre
+hydro, hydrofuge, placomarine, pregywab, aquapanel, glassroc
+porte,chassis,base, caisson
+suspendue, autoportant, mural, encastré
+parphonic, laine de verre, panneau roulé, isolation, isolant, toison, idv, Panodal
+acoustique, placophonique
+cable, couronne, fil electrique, bobine
+ciment, béton,sable,chape, weberfloor
+enduit, revetement, mortier, ragréage, prb,pf3
+pré-cablée,préfillé
+chauffe-eau,ballon,cumulus,chaudière, blinde
+webercol, mortier colle, colle carrelage, carofix
+bâche, toile, dulifix, protection, polyane, polyethylene
+mat, non brillant
+tissu, fibre verre, composite
+ponceuse, raboteuse, meuleuse, polisseuse, decapeuse, disqueuse
+Tableau câblé, coffret electrique, panneau electrique, armoire electrique, Hager
+placofeu, placoflam, placo flamme
+cornière, equerrre, profilé L
+arête angle, profilé angle
+toilette sol, toilette à poser
+radiateur, chauffage, convecteur
+treillis, grillage
+plaque, dalle, panneau, carreau
+fenetre toit, velux, lucarne, mansarde, Vasistas
+sdb, salle de bain
+impression, sous-couche, couche base
+mdf, bois, fibre de bois, agglomere
+receveur, bac, base, réservoir
+rockfeu, firerock
+lattis metallique, nergalto
+longrine, fondation
+sol PVC, Lino, Linoléum, vinyle
+kitchinette, cuisine, cuisinette, kitchenette
+molly, expansion, creuse
+placojoint, pr8, joint plaque platre
+ciporex, sopirex, beton celullaire
+rubalise, ruban, scotch
+sintobois, pate bois, reparation bois, mastic bois, rebouchage bois
+Aquamaster, etancheite carrelage, webersys, protection eau
+mapei, weber
+vmc, ventilation, aeration, wmc,soufflerie
+cablofil, chemin cable
+Chant plat, moulure, champlat, plinthe, bordure, Plinte
+fibre verre, fisnet
+porotherm, brique terre cuite
+Cahartt, carhartt
+galandage, scrigno, coulissante, galendage
+sac gravat, sac chantier
+volet roulant, velux, store automatisé, persienne enroulable
+caisse outil, malette outil, boite outil, kit outil
+faux plafond, plafond suspendu
+velux, fenetre toit, fenetre rotation
+parquet, plancher, sol flottant, bois naturel, lame bois
+sol pvc, vinyle, vynile, stratifié
+totem, echafaudage, echaffaudage
+Membrane etancheite, film etancheite, revetement etanche
+pompe de relevage, pompe eau usé, eau grise, pompe drainage
+disjoncteur, coupe circuit, sectionneur
+colonne douche, ensemble douche, robinetterie
+prise de courant, prise electrique, branchement
+porte battante, bloc porte
+console a air, clim, climatiseur, air conditionné
+faience, carrelage mural
+natte, membrane, film, couche
+BA13 250X120, BA13 2500x1200, ba13 25x12, ba13 2.5x1.2, plaque 1200
+wc, chiotte, toilette, cabinet, water
+BA13 260X120, BA13 2600x1200, ba13 26x12, ba13 2.6x1.2, plaque 1200
+BA13 2500x600, BA13 250x60, ba13 25x6, ba13 2.5x0.6, plaque 600
+étanche,plastifiée,imperméable
+gori, gory
+milwaukee, milwaki
+anti rouille, rustol
+betonniere, betoniere
+carroplatre, carreau platre, caroplatre
+stepoc, bloc a brancher
+isolant carrelage, soukaro
+boch, bosch, boch
