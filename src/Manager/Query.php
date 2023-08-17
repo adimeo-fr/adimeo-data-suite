@@ -62,9 +62,11 @@ class Query
         if (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string'] = $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'];
             unset($query['query']['bool']['must'][0]['bool']['must']);
+            unset($query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['type']);
         } else if (isset($query['query']['bool']['must'][0])) {
             $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string'] = $query['query']['bool']['must'][0]['query_string'];
             unset($query['query']['bool']['must'][0]['query_string']);
+            unset($query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['type']);
         }
 
         return $query;
