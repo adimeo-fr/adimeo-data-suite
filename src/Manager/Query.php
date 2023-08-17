@@ -78,14 +78,14 @@ class Query
     public function setAnalyzedFields($query)
     {
         $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
-            'name^100',
+            'label^100',
             'label_term_1^50',
             'label_term_2^50',
             'label_term_3^50',
             'brand^10'
         ];
         $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
-            'name^100',
+            'label^100',
             'label_term_1^50',
             'label_term_2^50',
             'label_term_3^50',
