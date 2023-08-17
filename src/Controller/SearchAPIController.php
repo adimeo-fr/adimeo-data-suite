@@ -127,7 +127,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                             'query' => array(
                                 'query_string' => array(
                                     'query' => $query_string,
-                                    //'default_operator' => $defaultOperator,
+                                    'default_operator' => $defaultOperator,
                                     'analyzer' => $request->get('analyzer') != null ? $request->get('analyzer') : 'standard',
                                     'fields' => array($field)
                                 )

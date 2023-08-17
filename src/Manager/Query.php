@@ -24,6 +24,7 @@ class Query
         }
 
         $clean_str = trim(preg_replace($stopwords, '', $keyword));
+        $clean_str = str_replace('  ', ' ', $clean_str);
 
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['query_string']['query'] = $clean_str;
@@ -63,10 +64,12 @@ class Query
             $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string'] = $query['query']['bool']['must'][0]['bool']['must'][0]['query_string'];
             unset($query['query']['bool']['must'][0]['bool']['must']);
             unset($query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['type']);
+            unset($query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['default_operator']);
         } else if (isset($query['query']['bool']['must'][0])) {
             $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string'] = $query['query']['bool']['must'][0]['query_string'];
             unset($query['query']['bool']['must'][0]['query_string']);
             unset($query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['type']);
+            unset($query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['default_operator']);
         }
 
         return $query;
@@ -75,16 +78,18 @@ class Query
     public function setAnalyzedFields($query)
     {
         $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
-            'name^10',
-            'label_term_1^8',
-            'label_term_2^6',
-            'label_term_3^4'
+            'name^100',
+            'label_term_1^50',
+            'label_term_2^50',
+            'label_term_3^50',
+            'brand^10'
         ];
         $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
-            'name^10',
-            'label_term_1^8',
-            'label_term_2^6',
-            'label_term_3^4'
+            'name^100',
+            'label_term_1^50',
+            'label_term_2^50',
+            'label_term_3^50',
+            'brand^10'
         ];
 
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
