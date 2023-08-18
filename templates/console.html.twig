@@ -16,7 +16,7 @@
   {%endif%}
   {% if engine_response is defined %}
     {% for hit in engine_response.hits %}
-      {{  hit._source.name  }}<br>
+      {{  hit._source.label  }}<br>
     {% endfor %}
   {%endif%}
   <!--
