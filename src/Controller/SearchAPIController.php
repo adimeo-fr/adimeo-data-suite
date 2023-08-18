@@ -117,7 +117,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                         'fields' => $analyzed_fields
                     );
                     if (!$this->getIndexManager()->isLegacy()) {
-                        //$tmpQuery['type'] = 'cross_fields';
+                        $tmpQuery['type'] = 'cross_fields';
                         $tmpQuery['lenient'] = true;
                     }
                     $query['query']['bool']['must'][0]['bool']['should'][]['query_string'] = $tmpQuery;
@@ -134,7 +134,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                             )
                         );
                         if (!$this->getIndexManager()->isLegacy()) {
-                            //$nested_query['query']['query_string']['type'] = 'cross_fields';
+                            $nested_query['query']['query_string']['type'] = 'cross_fields';
                             $nested_query['query']['query_string']['lenient'] = true;
                         }
                         $query['query']['bool']['must'][0]['bool']['should'][]['nested'] = $nested_query;
@@ -142,12 +142,12 @@ class SearchAPIController extends AdimeoDataSuiteController
                 } else {
                     $query['query']['bool']['must'][0]['query_string'] = array(
                         'query' => $query_string,
-                        //'default_operator' => $defaultOperator,
+                        'default_operator' => $defaultOperator,
                         'analyzer' => $request->get('analyzer') != null ? $request->get('analyzer') : 'standard',
                         'fields' => $analyzed_fields
                     );
                     if (!$this->getIndexManager()->isLegacy()) {
-                        //$query['query']['bool']['must'][0]['query_string']['type'] = 'cross_fields';
+                        $query['query']['bool']['must'][0]['query_string']['type'] = 'cross_fields';
                         $query['query']['bool']['must'][0]['query_string']['lenient'] = true;
                     }
                 }
@@ -327,7 +327,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                         } else {
                             $query['query']['bool']['must'][]['query_string'] = array(
                                 'query' => $qs_filter['field'] . ':"' . $qs_filter['value'] . '"',
-                                //'default_operator' => $defaultOperator,
+                                'default_operator' => $defaultOperator,
                                 'analyzer' => $request->get('analyzer') != null ? $request->get('analyzer') : 'standard',
                                 'fields' => array($qs_filter['field'])
                             );
@@ -339,8 +339,11 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $facets = explode(',', $request->get('facets'));
                     foreach ($facets as $facet) {
                         if (strpos($facet, '.') === FALSE) {
+                            if ($facet == 'domain') {
+
+                            }
                             $query['aggs'][$facet]['terms'] = array(
-                                'field' => $facet
+                                'field' => $facet == 'domain' ? 'domain.keyword' : $facet
                             );
                         } else {
                             $facet_parts = explode('.', $facet);
@@ -433,6 +436,9 @@ class SearchAPIController extends AdimeoDataSuiteController
 
                 if ($request->get('collapse') != null) {
                     $query['collapse'] = json_decode($request->get('collapse'));
+                    if ($query['collapse']->field == 'variant_code') {
+                        $query['collapse']->field = 'variant_code.keyword';
+                    }
                 }
 
                 if (is_null($query['collapse'])) {
@@ -504,7 +510,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                         $query['suggest'][$field] = array(
                             'text' => $text,
                             'term' => array(
-                                'field' => $field
+                                'field' => str_replace('.suggest', '', $field)
                             )
                         );
                     }
