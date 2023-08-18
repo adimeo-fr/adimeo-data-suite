@@ -436,9 +436,9 @@ class SearchAPIController extends AdimeoDataSuiteController
 
                 if ($request->get('collapse') != null) {
                     $query['collapse'] = json_decode($request->get('collapse'));
-                    if ($query['collapse']->field == 'variant_code') {
+                    /*if ($query['collapse']->field == 'variant_code') {
                         $query['collapse']->field = 'variant_code.keyword';
-                    }
+                    }*/
                 }
 
                 if (is_null($query['collapse'])) {

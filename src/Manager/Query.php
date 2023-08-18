@@ -84,13 +84,6 @@ class Query
             'label_term_3^50',
             'brand^10'
         ];
-        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
-            'label^100',
-            'label_term_1^50',
-            'label_term_2^50',
-            'label_term_3^50',
-            'brand^10'
-        ];
 
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
         $last = array_slice(explode(' ', $keyword), -1)[0];
