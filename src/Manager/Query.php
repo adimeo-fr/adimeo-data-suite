@@ -53,7 +53,7 @@ class Query
 
     public function addFuzziness($query)
     {
-        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['query'] = str_replace(' ', '~ ', $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['query']) . '~';
+        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['query'] = str_replace(' ', '~1 ', $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['query']) . '~1';
 
         return $query;
     }
@@ -125,11 +125,11 @@ class Query
     private function retrieveKeywordFromQuery($query, $replace = false, $property = 'query_string')
     {
         if (isset($query['query']['bool']['must'][0]['bool']['must'][0][$property])) {
-            return $replace ? str_replace(['~'], '', $query['query']['bool']['must'][0]['bool']['must'][0][$property]['query']) : $query['query']['bool']['must'][0]['bool']['must'][0][$property]['query'];
+            return $replace ? str_replace(['~1'], '', $query['query']['bool']['must'][0]['bool']['must'][0][$property]['query']) : $query['query']['bool']['must'][0]['bool']['must'][0][$property]['query'];
         } else if (isset($query['query']['bool']['must'][0][$property])) {
-            return $replace ? str_replace(['~'], '', $query['query']['bool']['must'][0][$property]['query']) : $query['query']['bool']['must'][0][$property]['query'];
+            return $replace ? str_replace(['~1'], '', $query['query']['bool']['must'][0][$property]['query']) : $query['query']['bool']['must'][0][$property]['query'];
         } else if (isset($query['query']['bool']['must'][0]['bool']['should'][0][$property])) {
-            return $replace ? str_replace(['~'], '', $query['query']['bool']['must'][0]['bool']['should'][0][$property]['query']) : $query['query']['bool']['must'][0]['bool']['should'][0][$property]['query'];
+            return $replace ? str_replace(['~1'], '', $query['query']['bool']['must'][0]['bool']['should'][0][$property]['query']) : $query['query']['bool']['must'][0]['bool']['should'][0][$property]['query'];
         }
 
         return '';
