@@ -35,7 +35,7 @@ class Query
         return $query;
     }
 
-    public function setPinnedDocuments($query)
+    public function setPinnedDocuments($query, $storeUid)
     {
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
 
@@ -44,7 +44,15 @@ class Query
         $search = array_search($keyword, array_column($pinned, 'query'));
 
         if ($search !== false) {
-            $query['query']['bool']['should']['pinned']['ids'] = explode(',', $pinned[$search]['ids']);
+            $ids = explode(',', $pinned[$search]['ids']);
+
+            $query['query']['bool']['should']['pinned']['ids'] = array_values(array_filter($ids, function ($id) use ($storeUid) {
+                list($ref, $store) = explode('_', $id);
+                if ($store == $storeUid) {
+                    return $id;
+                }
+            }));
+
             $query['query']['bool']['should']['pinned']['organic']['match']['label'] = $keyword;
         }
 

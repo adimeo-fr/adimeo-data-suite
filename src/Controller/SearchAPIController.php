@@ -153,6 +153,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 }
 
                 $body = json_decode($request->getContent(), TRUE);
+                $store_uid = $body['filter']['bool']['must'][0]['term']['store_uid'] ?? null;
                 if ($request->get('postFilter') != null) {
                     $query['post_filter'] = json_decode($request->get('postFilter'), TRUE);
                 } elseif (isset($body['postFilter']) && !empty($body['postFilter'])) {
@@ -529,7 +530,7 @@ class SearchAPIController extends AdimeoDataSuiteController
 
                 //file_put_contents('demo.txt', print_r($query, true)); die;
                 if (intval($query_string) === 0) {
-                    $query = $this->finalizeQuery($query);
+                    $query = $this->finalizeQuery($query, $store_uid);
                 }
 
                 try {
@@ -915,7 +916,7 @@ class SearchAPIController extends AdimeoDataSuiteController
         }
     }
 
-    private function finalizeQuery($query)
+    private function finalizeQuery($query, $store_uid)
     {
         // Remove stop words
         $query = $this->queryManager->removeStopWords($query);
@@ -930,7 +931,7 @@ class SearchAPIController extends AdimeoDataSuiteController
         $query = $this->queryManager->addFuzziness($query);
 
         // Get pinned documents
-        $query = $this->queryManager->setPinnedDocuments($query);
+        $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
 
         return $query;
 
