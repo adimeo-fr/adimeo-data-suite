@@ -528,7 +528,6 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
 
-                //file_put_contents('demo.txt', print_r($query, true)); die;
                 if (intval($query_string) === 0) {
                     $query = $this->finalizeQuery($query, $store_uid);
                 }
@@ -661,6 +660,10 @@ class SearchAPIController extends AdimeoDataSuiteController
                             }
                         }
                     }
+
+                    // Add logs
+                    $this->queryManager->addLog($request->getQueryString(), $res);
+
                     return new Response(json_encode($res, JSON_PRETTY_PRINT), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type'));
                 } else {
                     return new Response('{"error": "Search failed"}', 400, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type'));
