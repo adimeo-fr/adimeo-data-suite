@@ -132,13 +132,14 @@ class Query
 
     public function addLog($request, $result)
     {
+        $file = $this->params->get('public.folder') . '/log.txt';
         parse_str(parse_url(urldecode($request))['path'], $params);
-        file_put_contents('log.txt', '**********QUERY***********' . "\n");
-        file_put_contents('log.txt', print_r($params, true), FILE_APPEND);
-        file_put_contents('log.txt', '**********QUERY***********' . "\n", FILE_APPEND);
-        file_put_contents('log.txt', '**********RESULT***********' . "\n", FILE_APPEND);
-        file_put_contents('log.txt', isset($result['hits']['hits']) ? print_r(array_column($result['hits']['hits'], '_id'), true) : '', FILE_APPEND);
-        file_put_contents('log.txt', '**********QUERY***********' . "\n", FILE_APPEND);
+        file_put_contents($file, '**********QUERY***********' . "\n");
+        file_put_contents($file, print_r($params, true), FILE_APPEND);
+        file_put_contents($file, '**********QUERY***********' . "\n", FILE_APPEND);
+        file_put_contents($file, '**********RESULT***********' . "\n", FILE_APPEND);
+        file_put_contents($file, isset($result['hits']['hits']) ? print_r(array_column($result['hits']['hits'], '_id'), true) : '', FILE_APPEND);
+        file_put_contents($file, '**********QUERY***********' . "\n", FILE_APPEND);
     }
 
     private function retrieveKeywordFromQuery($query, $replace = false, $property = 'query_string')
