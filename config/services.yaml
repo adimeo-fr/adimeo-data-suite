@@ -19,6 +19,7 @@ parameters:
     verify: '%env(bool:ELASTIC_VERIFY)%'
 
   data.folder: '%kernel.project_dir%/data'
+  public.folder: '%kernel.project_dir%/public'
 
 
 
