@@ -132,7 +132,7 @@ class Query
 
     public function addLog($request, $result)
     {
-        $file = $this->params->get('public.folder') . '/log.txt';
+        $file = $this->params->get('log.folder') . '/search.log';
         parse_str(parse_url(urldecode($request))['path'], $params);
         file_put_contents($file, '**********QUERY***********' . "\n");
         file_put_contents($file, print_r($params, true), FILE_APPEND);
