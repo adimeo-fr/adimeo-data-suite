@@ -662,7 +662,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                     }
 
                     // Add logs
-                    $this->queryManager->addLog($request->getQueryString(), $res);
+                    $this->queryManager->addLog($request->getQueryString(), $query, $res);
 
                     return new Response(json_encode($res, JSON_PRETTY_PRINT), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type'));
                 } else {

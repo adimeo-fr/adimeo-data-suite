@@ -130,12 +130,15 @@ class Query
         return $query;
     }
 
-    public function addLog($request, $result)
+    public function addLog($request, $query, $result)
     {
         $file = $this->params->get('log.folder') . '/search.log';
         parse_str(parse_url(urldecode($request))['path'], $params);
-        file_put_contents($file, '**********QUERY***********' . "\n");
+        file_put_contents($file, '**********REQUEST***********' . "\n");
         file_put_contents($file, print_r(json_encode($params), true) . "\n", FILE_APPEND);
+        file_put_contents($file, '**********REQUEST***********' . "\n", FILE_APPEND);
+        file_put_contents($file, '**********QUERY***********' . "\n", FILE_APPEND);
+        file_put_contents($file, print_r(json_encode($query), true) . "\n", FILE_APPEND);
         file_put_contents($file, '**********QUERY***********' . "\n", FILE_APPEND);
         file_put_contents($file, '**********RESULT***********' . "\n", FILE_APPEND);
         file_put_contents($file, isset($result['hits']['hits']) ? print_r(json_encode(array_column($result['hits']['hits'], '_id')) . "\n", true) : '', FILE_APPEND);
