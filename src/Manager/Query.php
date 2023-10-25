@@ -45,7 +45,12 @@ class Query
 
         if ($search !== false) {
             $ids = explode(',', $pinned[$search]['ids']);
-
+            $file = $this->params->get('log.folder') . '/search.log';
+            file_put_contents($file, '**********PINNED***********' . "\n");
+            file_put_contents($file, print_r(json_encode($ids), true) . "\n", FILE_APPEND);
+            file_put_contents($file, print_r(json_encode($search), true) . "\n", FILE_APPEND);
+            file_put_contents($file, $keyword . "\n", FILE_APPEND);
+            file_put_contents($file, '**********PINNED***********' . "\n", FILE_APPEND);
             $query['query']['bool']['should']['pinned']['ids'] = array_values(array_filter($ids, function ($id) use ($storeUid) {
                 list($ref, $store) = explode('_', $id);
                 if ($store == $storeUid) {
@@ -134,7 +139,7 @@ class Query
     {
         $file = $this->params->get('log.folder') . '/search.log';
         parse_str(parse_url(urldecode($request))['path'], $params);
-        file_put_contents($file, '**********REQUEST***********' . "\n");
+        file_put_contents($file, '**********REQUEST***********' . "\n", FILE_APPEND);
         file_put_contents($file, print_r(json_encode($params), true) . "\n", FILE_APPEND);
         file_put_contents($file, '**********REQUEST***********' . "\n", FILE_APPEND);
         file_put_contents($file, '**********QUERY***********' . "\n", FILE_APPEND);
