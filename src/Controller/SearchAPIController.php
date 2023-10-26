@@ -8,6 +8,7 @@ use AdimeoDataSuite\Model\BoostQuery;
 use AdimeoDataSuite\Model\PersistentObject;
 use App\Manager\Query;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\Cache\ItemInterface;
@@ -65,7 +66,7 @@ class SearchAPIController extends AdimeoDataSuiteController
 
                     return $mapping;
                 });
-                $definition = is_array($mapping['properties']) ? $mapping['properties'] : [];
+                $definition = $mapping != null && is_array($mapping['properties']) ? $mapping['properties'] : [];
                 $analyzed_fields = array();
                 $nested_analyzed_fields = array();
                 $stickyFacets = $request->get('sticky_facets') != NULL ? array_map('trim', explode(',', $request->get('sticky_facets'))) : [];
@@ -153,6 +154,8 @@ class SearchAPIController extends AdimeoDataSuiteController
                 }
 
                 $body = json_decode($request->getContent(), TRUE);
+                $this->queryManager->addLog('search.log', 'BODY', json_encode(json_decode($request->getContent(), true)), false);
+
                 $store_uid = $body['filter']['bool']['must'][0]['term']['store_uid'] ?? null;
                 if ($request->get('postFilter') != null) {
                     $query['post_filter'] = json_decode($request->get('postFilter'), TRUE);
@@ -662,7 +665,10 @@ class SearchAPIController extends AdimeoDataSuiteController
                     }
 
                     // Add logs
-                    $this->queryManager->addLog($request->getQueryString(), $query, $res);
+                    parse_str(parse_url(urldecode($request->getQueryString()))['path'], $params);
+                    $this->queryManager->addLog('search.log', 'REQUEST', print_r(json_encode($params), true), true);
+                    $this->queryManager->addLog('search.log', 'QUERY', print_r(json_encode($query), true), true);
+                    $this->queryManager->addLog('search.log', 'HITS', isset($res['hits']['hits']) ? print_r(json_encode(array_column($res['hits']['hits'], '_id')) . "\n", true) : '', true);
 
                     return new Response(json_encode($res, JSON_PRETTY_PRINT), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type'));
                 } else {

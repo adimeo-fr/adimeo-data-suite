@@ -45,12 +45,11 @@ class Query
 
         if ($search !== false) {
             $ids = explode(',', $pinned[$search]['ids']);
-            $file = $this->params->get('log.folder') . '/search.log';
-            file_put_contents($file, '**********PINNED***********' . "\n");
-            file_put_contents($file, print_r(json_encode($ids), true) . "\n", FILE_APPEND);
-            file_put_contents($file, print_r(json_encode($search), true) . "\n", FILE_APPEND);
-            file_put_contents($file, $keyword . "\n", FILE_APPEND);
-            file_put_contents($file, '**********PINNED***********' . "\n", FILE_APPEND);
+
+            $this->addLog('search.log', 'PINNED IDS', print_r(json_encode($ids), true), true);
+            $this->addLog('search.log', 'PINNED SEARCH', print_r(json_encode($search), true), true);
+            $this->addLog('search.log', 'PINNED KEYWORD', $keyword, true);
+            $this->addLog('search.log', 'PINNED STORE ID', $storeUid, true);
             $query['query']['bool']['should']['pinned']['ids'] = array_values(array_filter($ids, function ($id) use ($storeUid) {
                 list($ref, $store) = explode('_', $id);
                 if ($store == $storeUid) {
@@ -135,19 +134,10 @@ class Query
         return $query;
     }
 
-    public function addLog($request, $query, $result)
+    public function addLog($filename, $section, $data, $append)
     {
-        $file = $this->params->get('log.folder') . '/search.log';
-        parse_str(parse_url(urldecode($request))['path'], $params);
-        file_put_contents($file, '**********REQUEST***********' . "\n", FILE_APPEND);
-        file_put_contents($file, print_r(json_encode($params), true) . "\n", FILE_APPEND);
-        file_put_contents($file, '**********REQUEST***********' . "\n", FILE_APPEND);
-        file_put_contents($file, '**********QUERY***********' . "\n", FILE_APPEND);
-        file_put_contents($file, print_r(json_encode($query), true) . "\n", FILE_APPEND);
-        file_put_contents($file, '**********QUERY***********' . "\n", FILE_APPEND);
-        file_put_contents($file, '**********RESULT***********' . "\n", FILE_APPEND);
-        file_put_contents($file, isset($result['hits']['hits']) ? print_r(json_encode(array_column($result['hits']['hits'], '_id')) . "\n", true) : '', FILE_APPEND);
-        file_put_contents($file, '**********RESULT***********' . "\n", FILE_APPEND);
+        $file = $this->params->get('log.folder') . '/' . $filename;
+        file_put_contents($file, $section . ':' . $data . "\n", $append ? FILE_APPEND : 0);
     }
 
     private function retrieveKeywordFromQuery($query, $replace = false, $property = 'query_string')
