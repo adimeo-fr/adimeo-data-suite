@@ -155,16 +155,16 @@ class SearchAPIController extends AdimeoDataSuiteController
 
                 $body = json_decode($request->getContent(), TRUE);
                 $this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body), true), false);
-                $this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']), true), true);
-                $this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']), true), true);
-                $this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']['must']), true), true);
-                $this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']['must'][0]), true), true);
-                $this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']['must'][0]['term']), true), true);
-                $this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']['must'][0]['term']['store_uid']), true), true);
+                //$this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']), true), true);
+                //$this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']), true), true);
+                //$this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']['must']), true), true);
+                //$this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']['must'][0]), true), true);
+                //$this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']['must'][0]['term']), true), true);
+                //$this->queryManager->addLog('search.log', 'BODY', print_r(json_encode($body['filter']['bool']['must'][0]['term']['store_uid']), true), true);
 
                 $store_uid = $body['filter']['bool']['must'][0]['term']['store_uid'] ?? null;
 
-                $this->queryManager->addLog('search.log', 'BODY', $store_uid, true);
+                //$this->queryManager->addLog('search.log', 'BODY', $store_uid, true);
                 
                 if ($request->get('postFilter') != null) {
                     $query['post_filter'] = json_decode($request->get('postFilter'), TRUE);
