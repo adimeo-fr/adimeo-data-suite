@@ -46,6 +46,10 @@ class Query
         if ($search !== false) {
             $ids = explode(',', $pinned[$search]['ids']);
 
+            $this->addLog('search.log', 'PINNED IDS', print_r(json_encode($ids), true), true);
+            $this->addLog('search.log', 'PINNED SEARCH', print_r(json_encode($search), true), true);
+            $this->addLog('search.log', 'PINNED KEYWORD', $keyword, true);
+            $this->addLog('search.log', 'PINNED STORE ID', $storeUid, true);
             $query['query']['bool']['should']['pinned']['ids'] = array_values(array_filter($ids, function ($id) use ($storeUid) {
                 list($ref, $store) = explode('_', $id);
                 if ($store == $storeUid) {
@@ -128,6 +132,12 @@ class Query
         }
 
         return $query;
+    }
+
+    public function addLog($filename, $section, $data, $append)
+    {
+        $file = $this->params->get('log.folder') . '/' . $filename;
+        file_put_contents($file, $section . ':' . $data . "\n", $append ? FILE_APPEND : 0);
     }
 
     private function retrieveKeywordFromQuery($query, $replace = false, $property = 'query_string')
