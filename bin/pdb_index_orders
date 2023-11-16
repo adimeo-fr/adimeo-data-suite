@@ -1,0 +1,19 @@
+#!/usr/bin/env php
+
+<?php
+ini_set("display_errors", "1");
+ini_set("error_reporting", E_ALL);
+
+$ads_path = realpath(__DIR__."/../");
+
+print '======= Starting Indexation ======='.PHP_EOL;
+$command = "php {$ads_path}/bin/console --env=prod ads:exec Ob9IwoMB7v2t4sfdBWS0 > {$ads_path}/var/log/index_orders.log 2>&1";
+print $command.PHP_EOL;
+exec($command);
+
+print '======= Remove old orders ======='.PHP_EOL;
+$cmd = "php {$ads_path}/bin/console --env=prod ads:delete-by-query clean_pdb_order > {$ads_path}/var/log/index_clean_orders.log 2>&1";
+print $cmd.PHP_EOL;
+exec($cmd);
+
+print '======= Finishing Indexation =======';
