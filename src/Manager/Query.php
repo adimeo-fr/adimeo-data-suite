@@ -103,7 +103,7 @@ class Query
             'label_term_1^50',
             'label_term_2^50',
             'label_term_3^50',
-            'brand^10'
+            'brand_analyzed_french^200'
         ];
         $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['boost'] = 100;
 
@@ -115,7 +115,7 @@ class Query
             'label_term_1^50',
             'label_term_2^50',
             'label_term_3^50',
-            'brand^10'
+            'brand_analyzed_french^200'
         ];
 
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
