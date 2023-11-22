@@ -540,7 +540,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
 
-                if (intval($query_string) === 0) {
+                if (in_array($indexName, ['pdb_product', 'product', 'products']) && intval($query_string) === 0) {
                     $query = $this->finalizeQuery($query, $store_uid);
                 }
 
