@@ -948,6 +948,9 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Add fuzziness
         $query = $this->queryManager->addFuzziness($query);
 
+        // Add minimum should match property
+        $query = $this->queryManager->addMinimumShouldMatch($query);
+
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
 
