@@ -134,6 +134,14 @@ class Query
         return $query;
     }
 
+    public function addMinimumShouldMatch($query)
+    {
+        $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['minimum_should_match'] = '100%';
+        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['minimum_should_match'] = '100%';
+
+        return $query;
+    }
+
     public function addLog($filename, $section, $data, $append)
     {
         $file = $this->params->get('log.folder') . '/' . $filename;
