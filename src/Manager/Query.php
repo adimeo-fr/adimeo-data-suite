@@ -136,8 +136,11 @@ class Query
 
     public function addMinimumShouldMatch($query)
     {
-        $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['minimum_should_match'] = '100%';
-        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['minimum_should_match'] = '100%';
+        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
+        if (!str_contains($keyword, 'category_id')) {
+            $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['minimum_should_match'] = '100%';
+            $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['minimum_should_match'] = '100%';
+        }
 
         return $query;
     }
