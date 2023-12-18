@@ -14,14 +14,6 @@
     </div>
 
   {%endif%}
-  {% if engine_response is defined %}
-    {% for hit in engine_response.hits %}
-      {{  hit._id  }} // {{  hit._source.label  }} // {{  hit._source.variant_code  }} // {{  hit._source.category  }} //
-      {% if hit._source.label_term_1 is defined %} {{  hit._source.label_term_1  }} {% endif %} //
-      {% if hit._source.label_term_2 is defined %} {{  hit._source.label_term_2  }} {% endif %} //
-      {% if hit._source.label_term_3 is defined %} {{  hit._source.label_term_3  }} {% endif %}<br>
-    {% endfor %}
-  {%endif%}
   <!--
   {%if results is defined%}
     {{results|raw}}

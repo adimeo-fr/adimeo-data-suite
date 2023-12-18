@@ -93,42 +93,70 @@ class Query
         return $query;
     }
 
-    public function setAnalyzedFields($query)
+    public function setAnalyzedFields($query, $index_name)
     {
-        // Without fuzinness
-        $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
-            'label^100',
-            'label.1term^200',
-            'label.3term^150',
-            'label_term_1^50',
-            'label_term_2^50',
-            'label_term_3^50',
-            'brand_analyzed_french^200'
-        ];
-        $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['boost'] = 100;
+        switch ($index_name) {
+            case 'pdb_stores':
+                // Without fuzinness
+                $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
+                    'label'
+                ];
+                $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['boost'] = 100;
 
-        // With fuzziness
-        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
-            'label^100',
-            'label.1term^200',
-            'label.3term^150',
-            'label_term_1^50',
-            'label_term_2^50',
-            'label_term_3^50',
-            'brand_analyzed_french^200'
-        ];
+                // With fuzziness
+                $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
+                    'label'
+                ];
+                break;
+            case 'pdb_editorial_content':
+                // Without fuzinness
+                $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
+                    'body_html'
+                ];
+                $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['boost'] = 100;
 
-        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
-        $words = explode(' ', $keyword);
-        if (count($words) > 1) {
-            $last = array_slice($words, -1)[0];
+                // With fuzziness
+                $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
+                    'body_html'
+                ];
+                break;
+            default:
+                // Without fuzinness
+                $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
+                    'label^100',
+                    'label.1term^200',
+                    'label.3term^150',
+                    'label_term_1^50',
+                    'label_term_2^50',
+                    'label_term_3^50',
+                    'brand_analyzed_french^200'
+                ];
+                $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['boost'] = 100;
 
-            $query['query']['bool']['must'][0]['bool']['should'][2]['simple_query_string'] = [
-                'query' => strtoupper($last),
-                'fields' => [
-                    'attr_taille^10'
-                ]
-            ];
+                // With fuzziness
+                $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
+                    'label^100',
+                    'label.1term^200',
+                    'label.3term^150',
+                    'label_term_1^50',
+                    'label_term_2^50',
+                    'label_term_3^50',
+                    'brand_analyzed_french^200'
+                ];
+
+                $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
+                $words = explode(' ', $keyword);
+                if (count($words) > 1) {
+                    $last = array_slice($words, -1)[0];
+
+                    $query['query']['bool']['must'][0]['bool']['should'][2]['simple_query_string'] = [
+                        'query' => strtoupper($last),
+                        'fields' => [
+                            'attr_taille^10'
+                        ]
+                    ];
+                }
+                break;
         }
 
         return $query;
@@ -136,11 +164,8 @@ class Query
 
     public function addMinimumShouldMatch($query)
     {
-        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
-        if (!str_contains($keyword, 'category_id')) {
-            $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['minimum_should_match'] = '100%';
-            $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['minimum_should_match'] = '100%';
-        }
+        $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['minimum_should_match'] = '100%';
+        $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['minimum_should_match'] = '100%';
 
         return $query;
     }

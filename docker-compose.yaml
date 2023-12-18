@@ -42,6 +42,9 @@ services:
       test: cgi-fcgi -bind -connect localhost:9000 > /dev/null 2>&1 || exit 1
     security_opt:
       - no-new-privileges:true
+    extra_hosts:
+      - "drupal-recette.pdb.saint-gobain.net:10.126.11.140"
+      - "www.laplateforme.com:45.60.13.156"
 
   search_nginx:
     image: pdb/search_nginx:${APP_ENV}

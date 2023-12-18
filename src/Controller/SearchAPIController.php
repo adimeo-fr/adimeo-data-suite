@@ -540,11 +540,13 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
 
-                if (in_array($indexName, ['pdb_product', 'product', 'products']) && intval($query_string) === 0 && !str_contains($query_string, 'category_id')) {
-                    $query = $this->finalizeQuery($query, $store_uid);
+                if (in_array($indexName, ['pdb_stores', 'pdb_editorial_content', 'pdb_product', 'product', 'products']) && intval($query_string) === 0 && !str_contains($query_string, 'category_id')) {
+                    $query = $this->finalizeQuery($query, $store_uid, $indexName);
                 }
 
                 try {
+                    echo '<pre>';
+                    echo json_encode($query); die;
                     $res = $this->getIndexManager()->search($indexName, $query, $request->get('from') != null ? $request->get('from') : 0, $request->get('size') != null ? $request->get('size') : 10, $mappingName);
 
                     //Stat part
@@ -934,7 +936,7 @@ class SearchAPIController extends AdimeoDataSuiteController
         }
     }
 
-    private function finalizeQuery($query, $store_uid)
+    private function finalizeQuery($query, $store_uid, $index_name)
     {
         // Remove stop words
         $query = $this->queryManager->removeStopWords($query);
@@ -943,7 +945,7 @@ class SearchAPIController extends AdimeoDataSuiteController
         $query = $this->queryManager->addBoolToQueryString($query);
 
         // Set analyzed fields
-        $query = $this->queryManager->setAnalyzedFields($query);
+        $query = $this->queryManager->setAnalyzedFields($query, $index_name);
 
         // Add fuzziness
         $query = $this->queryManager->addFuzziness($query);
@@ -954,10 +956,10 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
 
-        return $query;
+        //return $query;
 
-        //echo '<pre>';
-        //echo json_encode($query); die;
+        echo '<pre>';
+        echo json_encode($query); die;
     }
 
 }
