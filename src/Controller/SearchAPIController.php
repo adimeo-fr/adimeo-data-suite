@@ -956,10 +956,10 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
 
-        //return $query;
+        return $query;
 
-        echo '<pre>';
-        echo json_encode($query); die;
+        //echo '<pre>';
+        //echo json_encode($query); die;
     }
 
 }
