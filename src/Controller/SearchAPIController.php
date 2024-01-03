@@ -639,6 +639,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                                         'body' => $ap->getBody(),
                                         'url' => $ap->getUrl(),
                                         'image' => $ap->getImage(),
+                                        'button' => $ap->getButton(),
                                     );
                                 }
                             }
