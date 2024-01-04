@@ -96,7 +96,7 @@ class Query
     public function setAnalyzedFields($query, $index_name)
     {
         switch ($index_name) {
-            case 'pdb_stores':
+            case 'pdb_store':
                 // Without fuzinness
                 $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
                     'label'
