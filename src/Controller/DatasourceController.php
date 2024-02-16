@@ -275,5 +275,4 @@ class DatasourceController extends AdimeoDataSuiteController
         }
         return new Response(json_encode(array('Error' => 'Provided datasource is incorrect')), 400, array('Content-type' => 'application/json'));
     }
-
 }
