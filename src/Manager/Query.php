@@ -145,6 +145,26 @@ class Query
         return $query;
     }
 
+    public function setFunctionScore($query)
+    {
+        $array = [];
+        $array['query']['function_score']['query'] = $query['query'];
+        $array['query']['function_score']['functions'][] = [
+            'script_score' => [
+                'script' => [
+                    'source' => 'doc[\'stock\'].value == 0 ? 0.001 : 1'
+                ]
+            ]
+        ];
+        $array['query']['function_score']['score_mode'] = 'sum';
+        $array['aggs'] = $query['aggs'];
+        $array['collapse'] = $query['collapse'];
+        $array['sort'] = $query['sort'];
+        $array['suggest'] = $query['suggest'];
+
+        return $array;
+    }
+
     public function addLog($filename, $section, $data, $append)
     {
         $file = $this->params->get('log.folder') . '/' . $filename;

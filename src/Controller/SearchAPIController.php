@@ -954,6 +954,9 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
 
+        // Add function score
+        $query = $this->queryManager->setFunctionScore($query);
+
         return $query;
 
         //echo '<pre>';
