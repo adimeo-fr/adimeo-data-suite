@@ -542,8 +542,8 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
 
-                if (in_array($indexName, ['pdb_product', 'product', 'products']) && intval($query_string) === 0 && !str_contains($query_string, 'category_id')) {
-                    $query = $this->finalizeQuery($query, $store_uid);
+                if (in_array($indexName, ['pdb_store', 'pdb_editorial_content', 'pdb_product', 'product', 'products']) && intval($query_string) === 0 && !str_contains($query_string, 'category_id')) {
+                    $query = $this->finalizeQuery($query, $store_uid, $indexName);
                 }
 
                 try {
@@ -936,7 +936,7 @@ class SearchAPIController extends AdimeoDataSuiteController
         }
     }
 
-    private function finalizeQuery($query, $store_uid)
+    private function finalizeQuery($query, $store_uid, $index_name)
     {
         // Remove stop words
         $query = $this->queryManager->removeStopWords($query);
@@ -956,8 +956,10 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
 
-        // Add function score
-        $query = $this->queryManager->setFunctionScore($query);
+        if (in_array($index_name, ['pdb_product', 'product', 'products']) ) {
+            // Add function score
+            $query = $this->queryManager->setFunctionScore($query);
+        }
 
         return $query;
 
