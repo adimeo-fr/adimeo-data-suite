@@ -182,10 +182,19 @@ class Query
             ]
         ];
         $array['query']['function_score']['score_mode'] = 'sum';
-        $array['aggs'] = $query['aggs'];
-        $array['collapse'] = $query['collapse'];
-        $array['sort'] = $query['sort'];
-        $array['suggest'] = $query['suggest'];
+
+        if (isset($query['aggs'])) {
+            $array['aggs'] = $query['aggs'];
+        }
+        if (isset($query['collapse'])) {
+            $array['collapse'] = $query['collapse'];
+        }
+        if (isset($query['sort'])) {
+            $array['sort'] = $query['sort'];
+        }
+        if (isset($query['suggest'])) {
+            $array['suggest'] = $query['suggest'];
+        }
 
         return $array;
     }
