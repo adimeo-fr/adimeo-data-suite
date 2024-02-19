@@ -154,13 +154,15 @@ class SearchAPIController extends AdimeoDataSuiteController
                 }
 
                 $body = json_decode($request->getContent(), true);
-                $filter = $body['filter'];
-                if (is_string($filter)) {
-                    $filter = json_decode($filter, true);
+                if (isset($body['filter'])) {
+                    $filter = $body['filter'];
+                    if (is_string($filter)) {
+                        $filter = json_decode($filter, true);
+                    }
+                    $this->queryManager->addLog('search.log', 'BODY', print_r($filter, true), true);
                 }
 
                 $this->queryManager->addLog('search.log', 'BODY', print_r($body, true), false);
-                $this->queryManager->addLog('search.log', 'BODY', print_r($filter, true), true);
 
                 $store_uid = $filter['bool']['must'][0]['term']['store_uid'] ?? null;
 
