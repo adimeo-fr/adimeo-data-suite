@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0ef4dc4f15074bee868aa095486235dc",
+    "content-hash": "78e1958bc2d345c7f44a4745034b8618",
     "packages": [
         {
             "name": "adimeo-data-suite/commons",
-            "version": "1.2.7",
+            "version": "1.2.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/adimeo-fr/adimeo-data-suite-commons.git",
-                "reference": "ed4321adc7f7af8e52e3e4260701b0e365b73cde"
+                "reference": "3a567d8fe449a1d5dfb48ba2581d3bb8bd80fe2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/adimeo-fr/adimeo-data-suite-commons/zipball/ed4321adc7f7af8e52e3e4260701b0e365b73cde",
-                "reference": "ed4321adc7f7af8e52e3e4260701b0e365b73cde",
+                "url": "https://api.github.com/repos/adimeo-fr/adimeo-data-suite-commons/zipball/3a567d8fe449a1d5dfb48ba2581d3bb8bd80fe2c",
+                "reference": "3a567d8fe449a1d5dfb48ba2581d3bb8bd80fe2c",
                 "shasum": ""
             },
             "require": {
@@ -31,9 +31,9 @@
                 }
             },
             "support": {
-                "source": "https://github.com/adimeo-fr/adimeo-data-suite-commons/tree/1.2.7"
+                "source": "https://github.com/adimeo-fr/adimeo-data-suite-commons/tree/1.2.8"
             },
-            "time": "2024-02-16T17:39:30+00:00"
+            "time": "2024-02-23T12:56:42+00:00"
         },
         {
             "name": "adimeo-data-suite/datasources",

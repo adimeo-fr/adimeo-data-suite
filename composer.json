@@ -5,13 +5,13 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/adimeo-fr/adimeo-data-suite-commons"
+            "url": "https://github.com/adimeo-fr/adimeo-data-suite-commons.git"
         }
     ],
     "require": {
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "adimeo-data-suite/commons": "1.2.7",
+        "adimeo-data-suite/commons": "1.2.8",
         "adimeo-data-suite/datasources": "*",
         "adimeo-data-suite/filters": "*",
         "adimeo-data-suite/search-client": "*",
