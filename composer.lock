@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f107178a60f903cdd248ac0170127b90",
+    "content-hash": "78e1958bc2d345c7f44a4745034b8618",
     "packages": [
         {
             "name": "adimeo-data-suite/commons",
-            "version": "dev-features/add-request-options",
+            "version": "1.2.8",
             "source": {
                 "type": "git",
-                "url": "https://github.com/nicoCSGBDF/adimeo-data-suite-commons.git",
-                "reference": "be274730329d81237522c064061c958eed4675c1"
+                "url": "https://github.com/adimeo-fr/adimeo-data-suite-commons.git",
+                "reference": "3a567d8fe449a1d5dfb48ba2581d3bb8bd80fe2c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nicoCSGBDF/adimeo-data-suite-commons/zipball/be274730329d81237522c064061c958eed4675c1",
-                "reference": "be274730329d81237522c064061c958eed4675c1",
+                "url": "https://api.github.com/repos/adimeo-fr/adimeo-data-suite-commons/zipball/3a567d8fe449a1d5dfb48ba2581d3bb8bd80fe2c",
+                "reference": "3a567d8fe449a1d5dfb48ba2581d3bb8bd80fe2c",
                 "shasum": ""
             },
             "require": {
@@ -31,9 +31,9 @@
                 }
             },
             "support": {
-                "source": "https://github.com/nicoCSGBDF/adimeo-data-suite-commons/tree/features/add-request-options"
+                "source": "https://github.com/adimeo-fr/adimeo-data-suite-commons/tree/1.2.8"
             },
-            "time": "2023-04-14T15:00:12+00:00"
+            "time": "2024-02-23T12:56:42+00:00"
         },
         {
             "name": "adimeo-data-suite/datasources",
@@ -5389,9 +5389,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "adimeo-data-suite/commons": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
@@ -5399,5 +5397,5 @@
         "ext-iconv": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.2.0"
+    "plugin-api-version": "2.3.0"
 }
