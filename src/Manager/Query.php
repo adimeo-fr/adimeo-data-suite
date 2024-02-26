@@ -145,6 +145,35 @@ class Query
         return $query;
     }
 
+    public function setFunctionScore($query, $domains)
+    {
+        $array = [];
+        $array['query']['function_score']['query'] = $query['query'];
+        $array['query']['function_score']['functions'][] = [
+            'script_score' => [
+                'script' => [
+                    'source' => 'doc[\'domain\'].value == "Électricien" ? 1 : 0.001'
+                ]
+            ]
+        ];
+        $array['query']['function_score']['score_mode'] = 'sum';
+
+        if (isset($query['aggs'])) {
+            $array['aggs'] = $query['aggs'];
+        }
+        if (isset($query['collapse'])) {
+            $array['collapse'] = $query['collapse'];
+        }
+        if (isset($query['sort'])) {
+            $array['sort'] = $query['sort'];
+        }
+        if (isset($query['suggest'])) {
+            $array['suggest'] = $query['suggest'];
+        }
+
+        return $array;
+    }
+
     public function addLog($filename, $section, $data, $append)
     {
         $file = $this->params->get('log.folder') . '/' . $filename;

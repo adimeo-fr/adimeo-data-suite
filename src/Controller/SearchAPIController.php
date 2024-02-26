@@ -541,7 +541,11 @@ class SearchAPIController extends AdimeoDataSuiteController
                 }
 
                 if (in_array($indexName, ['pdb_product', 'product', 'products']) && intval($query_string) === 0 && !str_contains($query_string, 'category_id')) {
-                    $query = $this->finalizeQuery($query, $store_uid);
+                    $domains = '';
+                    if ($request->get('domains') != null) {
+                        $domains = $request->get('domains');
+                    }
+                    $query = $this->finalizeQuery($query, $store_uid, $indexName, $domains);
                 }
 
                 try {
@@ -934,7 +938,7 @@ class SearchAPIController extends AdimeoDataSuiteController
         }
     }
 
-    private function finalizeQuery($query, $store_uid)
+    private function finalizeQuery($query, $store_uid, $index_name, $domains = '')
     {
         // Remove stop words
         $query = $this->queryManager->removeStopWords($query);
@@ -953,6 +957,11 @@ class SearchAPIController extends AdimeoDataSuiteController
 
         // Get pinned documents
         $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
+
+        if (in_array($index_name, ['pdb_product', 'product', 'products']) ) {
+            // Add function score
+            $query = $this->queryManager->setFunctionScore($query, $domains);
+        }
 
         return $query;
 
