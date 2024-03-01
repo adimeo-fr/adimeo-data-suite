@@ -957,8 +957,8 @@ class SearchAPIController extends AdimeoDataSuiteController
         $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
 
         if (in_array($index_name, ['pdb_product', 'product', 'products']) ) {
-            // Add function score
-            $query = $this->queryManager->setFunctionScore($query);
+            // Set sort
+            $query = $this->queryManager->setSort($query);
         }
 
         return $query;
