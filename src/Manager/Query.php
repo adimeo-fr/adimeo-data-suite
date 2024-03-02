@@ -177,7 +177,7 @@ class Query
         $array['query']['function_score']['functions'][] = [
             'script_score' => [
                 'script' => [
-                    'source' => 'doc[\'stock\'].value == 0 || doc[\'stock_delivery\'].value == 0 || doc[\'product_store_strategies\'].value == 3 || doc[\'product_store_strategies\'].contains(3) ? 0 : _score'
+                    'source' => 'doc[\'stock\'].value == 0 || doc[\'product_store_strategies\'].value == 3 || doc[\'product_store_strategies\'].contains(3) ? 0 : _score'
                 ]
             ]
         ];
