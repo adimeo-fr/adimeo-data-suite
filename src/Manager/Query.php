@@ -163,7 +163,7 @@ class Query
             '_script' => [
                 'type' => 'number',
                 'script' => [
-                    'source' => 'doc[\'stock\'].value == 0  ? 1 : 0',
+                    'source' => 'doc[\'stock_delivery\'].value == 0  ? 1 : 0',
                     'lang' => 'painless'
                 ],
                 'order' => 'asc'
