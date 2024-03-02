@@ -542,8 +542,8 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
 
-                if (in_array($indexName, ['pdb_store', 'pdb_editorial_content', 'pdb_product', 'product', 'products']) && intval($query_string) === 0 && !str_contains($query_string, 'category_id')) {
-                    $query = $this->finalizeQuery($query, $store_uid, $indexName);
+                if (in_array($indexName, ['pdb_store', 'pdb_editorial_content', 'pdb_product', 'product', 'products']) && intval($query_string) === 0) {
+                    $query = $this->finalizeQuery($query, $store_uid, $indexName, $query_string);
                 }
 
                 try {
@@ -937,26 +937,29 @@ class SearchAPIController extends AdimeoDataSuiteController
         }
     }
 
-    private function finalizeQuery($query, $store_uid, $index_name)
+    private function finalizeQuery($query, $store_uid, $index_name, $query_string)
     {
-        // Remove stop words
-        $query = $this->queryManager->removeStopWords($query);
+        if (!str_contains($query_string, 'category_id')) {
+            // Remove stop words
+            $query = $this->queryManager->removeStopWords($query);
 
-        // Add bool to query string
-        $query = $this->queryManager->addBoolToQueryString($query);
+            // Add bool to query string
+            $query = $this->queryManager->addBoolToQueryString($query);
 
-        // Set analyzed fields
-        $query = $this->queryManager->setAnalyzedFields($query, $index_name);
+            // Set analyzed fields
+            $query = $this->queryManager->setAnalyzedFields($query, $index_name);
 
-        // Add fuzziness
-        $query = $this->queryManager->addFuzziness($query);
+            // Add fuzziness
+            $query = $this->queryManager->addFuzziness($query);
 
-        // Add minimum should match property
-        $query = $this->queryManager->addMinimumShouldMatch($query);
+            // Add minimum should match property
+            $query = $this->queryManager->addMinimumShouldMatch($query);
 
-        $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
+            // Set pinned documents
+            $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
+        }
 
-        if (in_array($index_name, ['pdb_product', 'product', 'products']) ) {
+        if (in_array($index_name, ['pdb_product', 'product', 'products'])) {
             // Set sort and pinned documents
             $query = $this->queryManager->setFunctionScore($query);
         }
