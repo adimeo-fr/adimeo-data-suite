@@ -953,12 +953,9 @@ class SearchAPIController extends AdimeoDataSuiteController
         // Add minimum should match property
         $query = $this->queryManager->addMinimumShouldMatch($query);
 
-        // Get pinned documents
-        $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
-
         if (in_array($index_name, ['pdb_product', 'product', 'products']) ) {
-            // Set sort
-            $query = $this->queryManager->setSort($query);
+            // Set sort and pinned documents
+            $query = $this->queryManager->setSort($query, $store_uid);
         }
 
         return $query;
