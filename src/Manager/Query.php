@@ -42,7 +42,6 @@ class Query
         $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'pinned.json'), true);
 
         $search = array_search($keyword, array_column($pinned, 'query'));
-        $list = [];
 
         if ($search !== false) {
             $ids = explode(',', $pinned[$search]['ids']);
@@ -51,15 +50,17 @@ class Query
             $this->addLog('search.log', 'PINNED SEARCH', print_r(json_encode($search), true), true);
             $this->addLog('search.log', 'PINNED KEYWORD', $keyword, true);
             $this->addLog('search.log', 'PINNED STORE ID', $storeUid, true);
-            $list = array_values(array_filter($ids, function ($id) use ($storeUid) {
+            $query['query']['bool']['should']['pinned']['ids'] = array_values(array_filter($ids, function ($id) use ($storeUid) {
                 list($ref, $store) = explode('_', $id);
                 if ($store == $storeUid) {
                     return $id;
                 }
             }));
+
+            $query['query']['bool']['should']['pinned']['organic']['match']['label'] = $keyword;
         }
 
-        return $list;
+        return $query;
     }
 
     public function addFuzziness($query)
@@ -169,70 +170,33 @@ class Query
         return $query;
     }
 
-    public function setSort($query, $store_uid)
+    public function setFunctionScore($query)
     {
-        $query['sort'] = [];
-
-        $query['sort'][] = [
-            '_script' => [
-                'type' => 'number',
+        $array = [];
+        $array['query']['function_score']['query'] = $query['query'];
+        $array['query']['function_score']['functions'][] = [
+            'script_score' => [
                 'script' => [
-                    'source' => 'doc[\'stock\'].value == 0  ? 1 : 0',
-                    'lang' => 'painless'
-                ],
-                'order' => 'asc'
-            ]
-        ];
-
-        $query['sort'][] = [
-            '_script' => [
-                'type' => 'number',
-                'script' => [
-                    'source' => 'doc[\'stock_delivery\'].value == 0  ? 1 : 0',
-                    'lang' => 'painless'
-                ],
-                'order' => 'asc'
-            ]
-        ];
-
-        $query['sort'][] = [
-            '_script' => [
-                'type' => 'number',
-                'script' => [
-                    'source' => 'doc[\'product_store_strategies\'].value == 3 ? 1 : 0',
-                    'lang' => 'painless'
-                ],
-                'order' => 'asc'
-            ]
-        ];
-
-        $query['sort'][] = [
-            '_script' => [
-                'type' => 'number',
-                'script' => [
-                    'source' => 'doc[\'product_store_strategies\'].contains(3) ? 1 : 0',
-                    'lang' => 'painless'
-                ],
-                'order' => 'asc'
-            ]
-        ];
-
-        $ids = $this->setPinnedDocuments($query, $store_uid);
-
-        foreach ($ids as $id) {
-            $query['sort'][] = [
-                '_script' => [
-                    'type' => 'number',
-                    'script' => [
-                        'source' => 'doc[\'_id\'].value == "' . $id . '" ? 10 : 0',
-                        'lang' => 'painless'
-                    ],
-                    'order' => 'desc'
+                    'source' => '(doc[\'stock\'].value == 0 && doc[\'stock_delivery\'].value == 0) || doc[\'product_store_strategies\'].value == 3 || doc[\'product_store_strategies\'].contains(3) ? 0 : _score'
                 ]
-            ];
+            ]
+        ];
+        $array['query']['function_score']['score_mode'] = 'sum';
+
+        if (isset($query['aggs'])) {
+            $array['aggs'] = $query['aggs'];
+        }
+        if (isset($query['collapse'])) {
+            $array['collapse'] = $query['collapse'];
+        }
+        if (isset($query['sort'])) {
+            $array['sort'] = $query['sort'];
+        }
+        if (isset($query['suggest'])) {
+            $array['suggest'] = $query['suggest'];
         }
 
-        return $query;
+        return $array;
     }
 
     public function addLog($filename, $section, $data, $append)
