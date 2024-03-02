@@ -42,6 +42,7 @@ class Query
         $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'pinned.json'), true);
 
         $search = array_search($keyword, array_column($pinned, 'query'));
+        $list = [];
 
         if ($search !== false) {
             $ids = explode(',', $pinned[$search]['ids']);
@@ -50,17 +51,15 @@ class Query
             $this->addLog('search.log', 'PINNED SEARCH', print_r(json_encode($search), true), true);
             $this->addLog('search.log', 'PINNED KEYWORD', $keyword, true);
             $this->addLog('search.log', 'PINNED STORE ID', $storeUid, true);
-            $query['query']['bool']['should']['pinned']['ids'] = array_values(array_filter($ids, function ($id) use ($storeUid) {
+            $list = array_values(array_filter($ids, function ($id) use ($storeUid) {
                 list($ref, $store) = explode('_', $id);
                 if ($store == $storeUid) {
                     return $id;
                 }
             }));
-
-            $query['query']['bool']['should']['pinned']['organic']['match']['label'] = $keyword;
         }
 
-        return $query;
+        return $list;
     }
 
     public function addFuzziness($query)
@@ -170,7 +169,7 @@ class Query
         return $query;
     }
 
-    public function setSort($query)
+    public function setSort($query, $store_uid)
     {
         $query['sort'] = [];
 
@@ -189,7 +188,7 @@ class Query
             '_script' => [
                 'type' => 'number',
                 'script' => [
-                    'source' => 'doc[\'stock\'].value == 0  ? 1 : 0',
+                    'source' => 'doc[\'stock_delivery\'].value == 0  ? 1 : 0',
                     'lang' => 'painless'
                 ],
                 'order' => 'asc'
@@ -217,6 +216,21 @@ class Query
                 'order' => 'asc'
             ]
         ];
+
+        $ids = $this->setPinnedDocuments($query, $store_uid);
+
+        foreach ($ids as $id) {
+            $query['sort'][] = [
+                '_script' => [
+                    'type' => 'number',
+                    'script' => [
+                        'source' => 'doc[\'_id\'].value == "' . $id . '" ? 10 : 0',
+                        'lang' => 'painless'
+                    ],
+                    'order' => 'desc'
+                ]
+            ];
+        }
 
         return $query;
     }
