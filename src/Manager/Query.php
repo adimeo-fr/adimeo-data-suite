@@ -22,10 +22,10 @@ class Query
         foreach ($stopwords as &$word) {
             $word = '/\b' . preg_quote($word, '/') . '\b/';
         }
-
-        $clean_str = trim(preg_replace($stopwords, '', $keyword));
+        $clean_str = preg_replace($stopwords, '', $keyword);
         $clean_str = $this->removeAccents(strtolower(str_replace('  ', ' ', $clean_str)));
-
+        $clean_str = str_replace('\'', '', $clean_str);
+        
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['query_string']['query'] = $clean_str;
         } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
