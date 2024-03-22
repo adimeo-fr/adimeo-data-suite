@@ -16,7 +16,7 @@ class Query
     public function removeStopWords($query)
     {
         $keyword = $this->retrieveKeywordFromQuery($query);
-
+        $this->addLog('search.log', 'KEYWORD BEFORE CLEAN', $keyword, true);
         $stopwords = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'stopwords.json'), true);
 
         foreach ($stopwords as &$word) {
@@ -31,7 +31,7 @@ class Query
         } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = $clean_str;
         }
-
+        $this->addLog('search.log', 'KEYWORD AFTER CLEAN', $clean_str, true);
         return $query;
     }
 
