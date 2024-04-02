@@ -542,7 +542,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query['_source']['includes'] = array_map('trim', explode(',', $request->get('include_fields')));
                 }
 
-                if (in_array($indexName, ['pdb_store', 'pdb_editorial_content', 'pdb_product', 'product', 'products']) && intval($query_string) === 0) {
+                if (in_array($indexName, ['pdb_store', 'pdb_editorial_content', 'pdb_product', 'product', 'products', 'products1']) && intval($query_string) === 0) {
                     $query = $this->finalizeQuery($query, $store_uid, $indexName, $query_string);
                 }
 
@@ -959,7 +959,7 @@ class SearchAPIController extends AdimeoDataSuiteController
             $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
         }
 
-        if (in_array($index_name, ['pdb_product', 'product', 'products'])) {
+        if (in_array($index_name, ['pdb_product', 'product', 'products', 'products1'])) {
             // Set sort and pinned documents
             $query = $this->queryManager->setFunctionScore($query);
         }
