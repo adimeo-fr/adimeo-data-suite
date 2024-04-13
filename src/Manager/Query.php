@@ -19,10 +19,13 @@ class Query
 
         $stopwords = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'stopwords.json'), true);
 
-        foreach ($stopwords as &$word) {
-            $word = '/\b' . preg_quote($word, '/') . '\b/';
-        }
-        $clean_str = preg_replace($stopwords, '', $keyword);
+        $words = preg_split('/\s+/', $keyword);
+
+        $filtered_words = array_filter($words, function ($word) use ($stopwords) {
+            return !in_array(strtolower($word), $stopwords);
+        });
+
+        $clean_str = implode(' ', $filtered_words);
         $clean_str = $this->removeAccents(strtolower(str_replace('  ', ' ', $clean_str)));
         $clean_str = str_replace('\'', '', $clean_str);
         
