@@ -175,6 +175,9 @@ class Query
 
     public function setFunctionScore($query)
     {
+        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
+        $term = preg_replace('/\s+(?=.*[a-zA-Z])(?=.*[0-9])/', '', $keyword);
+
         $array = [];
         $array['query']['function_score']['query'] = $query['query'];
         $array['query']['function_score']['functions'][] = [
@@ -195,6 +198,15 @@ class Query
                 'weight' => 2
             ];
         }
+
+        $array['query']['function_score']['functions'][] = [
+            'script_score' => [
+                'script' => [
+                    'source' => 'def queryTerm = \'' . $term . '\'; def indexedTerm = doc[\'label.raw\'].value.replace(\' \', \'\'); if (queryTerm == indexedTerm) { return _score + 1; } else { return _score; }',
+                    'params' => ['queryTerm' => $keyword]
+                ]
+            ]
+        ];
 
         $array['query']['function_score']['score_mode'] = 'sum';
         $array['query']['function_score']['boost_mode'] = 'replace';
