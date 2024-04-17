@@ -189,14 +189,18 @@ class Query
         ];
 
         if (isset($query['query']['bool']['should']['pinned'])) {
-            $array['query']['function_score']['functions'][] = [
-                'filter' => [
-                    'terms' => [
-                        '_id' => $query['query']['bool']['should']['pinned']['ids'],
+            $weight = (count($query['query']['bool']['should']['pinned']['ids']) + 1) * 100;
+            foreach ($query['query']['bool']['should']['pinned']['ids'] as $id) {
+                $array['query']['function_score']['functions'][] = [
+                    'filter' => [
+                        'terms' => [
+                            '_id' => [$id],
+                        ],
                     ],
-                ],
-                'weight' => 2
-            ];
+                    'weight' => $weight
+                ];
+                $weight = $weight - 100;
+            }
         }
 
         $array['query']['function_score']['functions'][] = [
