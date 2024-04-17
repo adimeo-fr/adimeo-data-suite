@@ -167,7 +167,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 $store_uid = $filter['bool']['must'][0]['term']['store_uid'] ?? null;
 
                 $this->queryManager->addLog('search.log', 'STORE ID', $store_uid, true);
-                
+
                 if ($request->get('postFilter') != null) {
                     $query['post_filter'] = json_decode($request->get('postFilter'), TRUE);
                 } elseif (isset($body['postFilter']) && !empty($body['postFilter'])) {
@@ -641,6 +641,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                                         'body' => $ap->getBody(),
                                         'url' => $ap->getUrl(),
                                         'image' => $ap->getImage(),
+                                        'button' => $ap->getButton(),
                                     );
                                 }
                             }
@@ -919,7 +920,9 @@ class SearchAPIController extends AdimeoDataSuiteController
     {
         ini_set('always_populate_raw_post_data', -1);
         try {
+            $this->queryManager->addLog('custom.log', 'QUERY', print_r($request->getContent(), true), true);
             $res = $this->getIndexManager()->search($request->get('index'), json_decode($request->getContent(), TRUE), $request->get('from') != null ? $request->get('from') : 0, $request->get('size') !== false ? $request->get('size') : 20, $request->get('type'));
+            $this->queryManager->addLog('custom.log', 'RESULT', print_r(json_encode($res), true), true);
             return new Response(json_encode($res), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type, Pragma, If-Modified-Since, Cache-Control'));
         } catch (\Exception $ex) {
             return new Response(json_encode(array('error' => $ex->getMessage())), 200, array('Content-Type' => 'application/json; charset=utf-8'));
@@ -946,21 +949,18 @@ class SearchAPIController extends AdimeoDataSuiteController
             $query = $this->queryManager->addBoolToQueryString($query);
 
             // Set analyzed fields
-            $query = $this->queryManager->setAnalyzedFields($query);
+            $query = $this->queryManager->setAnalyzedFields($query, $index_name);
 
             // Add fuzziness
             $query = $this->queryManager->addFuzziness($query);
 
             // Add minimum should match property
             $query = $this->queryManager->addMinimumShouldMatch($query);
-
-            // Set pinned documents
-            $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
         }
 
         if (in_array($index_name, ['pdb_product', 'product', 'products', 'products1'])) {
             // Set sort and pinned documents
-            $query = $this->queryManager->setFunctionScore($query);
+            $query = $this->queryManager->setFunctionScore($query, $store_uid);
         }
 
         return $query;
