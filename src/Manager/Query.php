@@ -25,7 +25,7 @@ class Query
         $clean_str = preg_replace($stopwords, '', $keyword);
         $clean_str = $this->removeAccents(strtolower(str_replace('  ', ' ', $clean_str)));
         $clean_str = str_replace('\'', '', $clean_str);
-        
+
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['query_string']['query'] = $clean_str;
         } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
@@ -156,7 +156,20 @@ class Query
                 ]
             ]
         ];
+
+        if (isset($query['query']['bool']['should']['pinned'])) {
+            $array['query']['function_score']['functions'][] = [
+                'filter' => [
+                    'terms' => [
+                        '_id' => $query['query']['bool']['should']['pinned']['ids'],
+                    ],
+                ],
+                'weight' => 2
+            ];
+        }
+
         $array['query']['function_score']['score_mode'] = 'sum';
+        $array['query']['function_score']['boost_mode'] = 'replace';
 
         if (isset($query['aggs'])) {
             $array['aggs'] = $query['aggs'];
