@@ -38,34 +38,6 @@ class Query
         return $query;
     }
 
-    public function setPinnedDocuments($query, $storeUid)
-    {
-        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
-
-        $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'pinned.json'), true);
-
-        $search = array_search($keyword, array_column($pinned, 'query'));
-
-        if ($search !== false) {
-            $ids = explode(',', $pinned[$search]['ids']);
-
-            $this->addLog('search.log', 'PINNED IDS', print_r(json_encode($ids), true), true);
-            $this->addLog('search.log', 'PINNED SEARCH', print_r(json_encode($search), true), true);
-            $this->addLog('search.log', 'PINNED KEYWORD', $keyword, true);
-            $this->addLog('search.log', 'PINNED STORE ID', $storeUid, true);
-            $query['query']['bool']['should']['pinned']['ids'] = array_values(array_filter($ids, function ($id) use ($storeUid) {
-                list($ref, $store) = explode('_', $id);
-                if ($store == $storeUid) {
-                    return $id;
-                }
-            }));
-
-            $query['query']['bool']['should']['pinned']['organic']['match']['label'] = $keyword;
-        }
-
-        return $query;
-    }
-
     public function addFuzziness($query)
     {
         $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['query'] = str_replace(' ', '~1 ', $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['query']) . '~1';
@@ -173,10 +145,11 @@ class Query
         return $query;
     }
 
-    public function setFunctionScore($query)
+    public function setFunctionScore($query, $storeUid)
     {
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
         $term = preg_replace('/\s+(?=.*[a-zA-Z])(?=.*[0-9])/', '', $keyword);
+        $ids = $this->setPinnedDocuments($keyword, $storeUid);
 
         $array = [];
         $array['query']['function_score']['query'] = $query['query'];
@@ -188,16 +161,16 @@ class Query
             ]
         ];
 
-        if (isset($query['query']['bool']['should']['pinned'])) {
-            $weight = (count($query['query']['bool']['should']['pinned']['ids']) + 1) * 100;
-            foreach ($query['query']['bool']['should']['pinned']['ids'] as $id) {
+        if (count($ids) > 0) {
+            $weight = (count($ids) + 1) * 100;
+            foreach ($ids as $id) {
                 $array['query']['function_score']['functions'][] = [
-                    'filter' => [
-                        'terms' => [
-                            '_id' => [$id],
-                        ],
-                    ],
-                    'weight' => $weight
+                    'script_score' => [
+                        'script' => [
+                            'source' => 'doc[\'_id\'].value == params.id ? _score * params.weight : _score',
+                            'params' => ['id' => $id, 'weight' => $weight]
+                        ]
+                    ]
                 ];
                 $weight = $weight - 100;
             }
@@ -248,6 +221,30 @@ class Query
         }
 
         return '';
+    }
+
+    private function setPinnedDocuments($keyword, $storeUid)
+    {
+        $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'pinned.json'), true);
+
+        $search = array_search($keyword, array_column($pinned, 'query'));
+
+        if ($search !== false) {
+            $ids = explode(',', $pinned[$search]['ids']);
+
+            $this->addLog('search.log', 'PINNED IDS', print_r(json_encode($ids), true), true);
+            $this->addLog('search.log', 'PINNED SEARCH', print_r(json_encode($search), true), true);
+            $this->addLog('search.log', 'PINNED KEYWORD', $keyword, true);
+            $this->addLog('search.log', 'PINNED STORE ID', $storeUid, true);
+            return array_values(array_filter($ids, function ($id) use ($storeUid) {
+                list($ref, $store) = explode('_', $id);
+                if ($store == $storeUid) {
+                    return $id;
+                }
+            }));
+        }
+
+        return [];
     }
 
     private function removeAccents($string)

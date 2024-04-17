@@ -167,7 +167,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 $store_uid = $filter['bool']['must'][0]['term']['store_uid'] ?? null;
 
                 $this->queryManager->addLog('search.log', 'STORE ID', $store_uid, true);
-                
+
                 if ($request->get('postFilter') != null) {
                     $query['post_filter'] = json_decode($request->get('postFilter'), TRUE);
                 } elseif (isset($body['postFilter']) && !empty($body['postFilter'])) {
@@ -956,14 +956,11 @@ class SearchAPIController extends AdimeoDataSuiteController
 
             // Add minimum should match property
             $query = $this->queryManager->addMinimumShouldMatch($query);
-
-            // Set pinned documents
-            $query = $this->queryManager->setPinnedDocuments($query, $store_uid);
         }
 
         if (in_array($index_name, ['pdb_product', 'product', 'products', 'products1'])) {
             // Set sort and pinned documents
-            $query = $this->queryManager->setFunctionScore($query);
+            $query = $this->queryManager->setFunctionScore($query, $store_uid);
         }
 
         return $query;
