@@ -19,47 +19,22 @@ class Query
         $this->addLog('search.log', 'KEYWORD BEFORE CLEAN', $keyword, true);
         $stopwords = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'stopwords.json'), true);
 
-        foreach ($stopwords as &$word) {
-            $word = '/\b' . preg_quote($word, '/') . '\b/';
-        }
-        $clean_str = preg_replace($stopwords, '', $keyword);
+        $words = preg_split('/\s+/', $keyword);
+
+        $filtered_words = array_filter($words, function ($word) use ($stopwords) {
+            return !in_array(strtolower($word), $stopwords);
+        });
+
+        $clean_str = implode(' ', $filtered_words);
         $clean_str = $this->removeAccents(strtolower(str_replace('  ', ' ', $clean_str)));
         $clean_str = str_replace('\'', '', $clean_str);
-        
+
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['query_string']['query'] = $clean_str;
         } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = $clean_str;
         }
         $this->addLog('search.log', 'KEYWORD AFTER CLEAN', $clean_str, true);
-        return $query;
-    }
-
-    public function setPinnedDocuments($query, $storeUid)
-    {
-        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
-
-        $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'pinned.json'), true);
-
-        $search = array_search($keyword, array_column($pinned, 'query'));
-
-        if ($search !== false) {
-            $ids = explode(',', $pinned[$search]['ids']);
-
-            $this->addLog('search.log', 'PINNED IDS', print_r(json_encode($ids), true), true);
-            $this->addLog('search.log', 'PINNED SEARCH', print_r(json_encode($search), true), true);
-            $this->addLog('search.log', 'PINNED KEYWORD', $keyword, true);
-            $this->addLog('search.log', 'PINNED STORE ID', $storeUid, true);
-            $query['query']['bool']['should']['pinned']['ids'] = array_values(array_filter($ids, function ($id) use ($storeUid) {
-                list($ref, $store) = explode('_', $id);
-                if ($store == $storeUid) {
-                    return $id;
-                }
-            }));
-
-            $query['query']['bool']['should']['pinned']['organic']['match']['label'] = $keyword;
-        }
-
         return $query;
     }
 
@@ -170,8 +145,12 @@ class Query
         return $query;
     }
 
-    public function setFunctionScore($query)
+    public function setFunctionScore($query, $storeUid)
     {
+        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
+        $term = preg_replace('/\s+(?=.*[a-zA-Z])(?=.*[0-9])/', '', $keyword);
+        $ids = $this->setPinnedDocuments($keyword, $storeUid);
+
         $array = [];
         $array['query']['function_score']['query'] = $query['query'];
         $array['query']['function_score']['functions'][] = [
@@ -181,7 +160,33 @@ class Query
                 ]
             ]
         ];
+
+        if (count($ids) > 0) {
+            $weight = (count($ids) + 1) * 100;
+            foreach ($ids as $id) {
+                $array['query']['function_score']['functions'][] = [
+                    'script_score' => [
+                        'script' => [
+                            'source' => 'doc[\'_id\'].value == params.id ? _score * params.weight : _score',
+                            'params' => ['id' => $id, 'weight' => $weight]
+                        ]
+                    ]
+                ];
+                $weight = $weight - 100;
+            }
+        }
+
+        $array['query']['function_score']['functions'][] = [
+            'script_score' => [
+                'script' => [
+                    'source' => 'def queryTerm = \'' . $term . '\'; def indexedTerm = doc[\'label.raw\'].value.replace(\' \', \'\'); if (queryTerm == indexedTerm) { return _score + 1; } else { return _score; }',
+                    'params' => ['queryTerm' => $keyword]
+                ]
+            ]
+        ];
+
         $array['query']['function_score']['score_mode'] = 'sum';
+        $array['query']['function_score']['boost_mode'] = 'replace';
 
         if (isset($query['aggs'])) {
             $array['aggs'] = $query['aggs'];
@@ -216,6 +221,30 @@ class Query
         }
 
         return '';
+    }
+
+    private function setPinnedDocuments($keyword, $storeUid)
+    {
+        $pinned = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'pinned.json'), true);
+
+        $search = array_search($keyword, array_column($pinned, 'query'));
+
+        if ($search !== false) {
+            $ids = explode(',', $pinned[$search]['ids']);
+
+            $this->addLog('search.log', 'PINNED IDS', print_r(json_encode($ids), true), true);
+            $this->addLog('search.log', 'PINNED SEARCH', print_r(json_encode($search), true), true);
+            $this->addLog('search.log', 'PINNED KEYWORD', $keyword, true);
+            $this->addLog('search.log', 'PINNED STORE ID', $storeUid, true);
+            return array_values(array_filter($ids, function ($id) use ($storeUid) {
+                list($ref, $store) = explode('_', $id);
+                if ($store == $storeUid) {
+                    return $id;
+                }
+            }));
+        }
+
+        return [];
     }
 
     private function removeAccents($string)
