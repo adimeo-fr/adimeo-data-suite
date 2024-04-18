@@ -16,22 +16,22 @@ class Query
     public function removeStopWords($query)
     {
         $keyword = $this->retrieveKeywordFromQuery($query);
-
+        $this->addLog('search.log', 'KEYWORD BEFORE CLEAN', $keyword, true);
         $stopwords = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'stopwords.json'), true);
 
         foreach ($stopwords as &$word) {
             $word = '/\b' . preg_quote($word, '/') . '\b/';
         }
-
-        $clean_str = trim(preg_replace($stopwords, '', $keyword));
+        $clean_str = preg_replace($stopwords, '', $keyword);
         $clean_str = $this->removeAccents(strtolower(str_replace('  ', ' ', $clean_str)));
-
+        $clean_str = str_replace('\'', '', $clean_str);
+        
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['query_string']['query'] = $clean_str;
         } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = $clean_str;
         }
-
+        $this->addLog('search.log', 'KEYWORD AFTER CLEAN', $clean_str, true);
         return $query;
     }
 
@@ -143,6 +143,35 @@ class Query
         }
 
         return $query;
+    }
+
+    public function setFunctionScore($query)
+    {
+        $array = [];
+        $array['query']['function_score']['query'] = $query['query'];
+        $array['query']['function_score']['functions'][] = [
+            'script_score' => [
+                'script' => [
+                    'source' => '(doc[\'stock\'].value == 0 && doc[\'stock_delivery\'].value == 0) || doc[\'product_store_strategies\'].value == 3 || doc[\'product_store_strategies\'].contains(3) ? 0 : _score'
+                ]
+            ]
+        ];
+        $array['query']['function_score']['score_mode'] = 'sum';
+
+        if (isset($query['aggs'])) {
+            $array['aggs'] = $query['aggs'];
+        }
+        if (isset($query['collapse'])) {
+            $array['collapse'] = $query['collapse'];
+        }
+        if (isset($query['sort'])) {
+            $array['sort'] = $query['sort'];
+        }
+        if (isset($query['suggest'])) {
+            $array['suggest'] = $query['suggest'];
+        }
+
+        return $array;
     }
 
     public function addLog($filename, $section, $data, $append)
