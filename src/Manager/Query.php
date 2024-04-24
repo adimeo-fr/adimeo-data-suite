@@ -25,7 +25,7 @@ class Query
         $clean_str = preg_replace($stopwords, '', $keyword);
         $clean_str = $this->removeAccents(strtolower(str_replace('  ', ' ', $clean_str)));
         $clean_str = str_replace('\'', '', $clean_str);
-        
+
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['query_string']['query'] = $clean_str;
         } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
@@ -148,7 +148,10 @@ class Query
     public function setFunctionScore($query)
     {
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
-        $term = preg_replace('/^([a-zA-Z]+)\s+(\d+)/', '$1$2', $keyword);
+
+        if (preg_match('/[a-zA-Z]+\s+\d+/', $keyword)) {
+            $keyword = preg_replace('/^([a-zA-Z]+)\s+(\d+)/', '$1$2', $keyword);
+        }
 
         $array = [];
         $array['query']['function_score']['query'] = $query['query'];
@@ -162,12 +165,14 @@ class Query
         $array['query']['function_score']['functions'][] = [
             'script_score' => [
                 'script' => [
-                    'source' => 'def queryTerm = params.queryTerm; def indexedTerm = doc[\'label.raw\'].value.replace(\' \', \'\'); if (queryTerm == indexedTerm) { return _score + 1; } else { return _score; }',
-                    'params' => ['queryTerm' => $term]
+                    'source' => 'def queryTerm = params.keyword; def indexedTerm = doc[\'label.raw\'].value.replace(\' \', \'\'); if (queryTerm == indexedTerm) { return _score + 1; } else { return _score; }',
+                    'params' => ['keyword' => $keyword]
                 ]
             ]
         ];
+
         $array['query']['function_score']['score_mode'] = 'sum';
+        $array['query']['function_score']['boost_mode'] = 'replace';
 
         if (isset($query['aggs'])) {
             $array['aggs'] = $query['aggs'];
