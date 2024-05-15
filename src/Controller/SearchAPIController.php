@@ -167,7 +167,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 $store_uid = $filter['bool']['must'][0]['term']['store_uid'] ?? null;
 
                 $this->queryManager->addLog('search.log', 'STORE ID', $store_uid, true);
-                
+
                 if ($request->get('postFilter') != null) {
                     $query['post_filter'] = json_decode($request->get('postFilter'), TRUE);
                 } elseif (isset($body['postFilter']) && !empty($body['postFilter'])) {
@@ -516,12 +516,34 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $suggest_fields = array_map('trim', explode(',', $request->get('suggest')));
                     foreach ($suggest_fields as $i => $field) {
                         $text = substr($query_string, 0, 99);
-                        $query['suggest'][$field] = array(
-                            'text' => $text,
-                            'term' => array(
-                                'field' => str_replace('.suggest', '', $field)
-                            )
-                        );
+                        switch($field) {
+                            case 'phrase_suggest':
+                                $query['suggest']['phrase_suggest'] = array(
+                                    'text' => $text,
+                                    'phrase' => [
+                                        'field' => 'label',
+                                        'size' => 1,
+                                        'gram_size' => 3,
+                                        'direct_generator' => [
+                                            [
+                                                'field' => 'label',
+                                                'suggest_mode' => 'always',
+                                                'min_word_length' => 1,
+                                                'prefix_length' => 1
+                                            ]
+                                        ]
+                                    ]
+                                );
+                                break;
+                            default:
+                                $query['suggest'][$field] = array(
+                                    'text' => $text,
+                                    'term' => array(
+                                        'field' => str_replace('.suggest', '', $field)
+                                    )
+                                );
+                                break;
+                        }
                     }
                 }
 
