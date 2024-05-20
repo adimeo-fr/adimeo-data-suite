@@ -190,7 +190,7 @@ class DatasourceController extends AdimeoDataSuiteController
         'owner' => $raw[0],
         'cpu' => $raw[2],
         'mem' => $raw[3],
-        'time' => $raw[9],
+        'time' => $raw[9] ?? '',
       );
       if(isset($raw[13])){
         $info['id'] = $raw[13];
