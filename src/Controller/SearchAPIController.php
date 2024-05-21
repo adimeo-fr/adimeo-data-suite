@@ -945,7 +945,7 @@ class SearchAPIController extends AdimeoDataSuiteController
             61, 62, 63, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 96
         ]);
 
-        $output = shell_exec(dirname(__FILE__) . '/../../bin/pdb_index_stores_products ' . $stores . ' ' . $products . ' 2>&1; echo $?');
+        exec(dirname(__FILE__) . '/../../bin/pdb_index_stores_products ' . $stores . ' ' . $products . ' &> /dev/null &', $output);
 
         return new Response(json_encode(['success' => true]), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type, Pragma, If-Modified-Since, Cache-Control'));
     }
