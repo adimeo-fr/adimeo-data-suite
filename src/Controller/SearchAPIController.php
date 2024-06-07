@@ -948,6 +948,9 @@ class SearchAPIController extends AdimeoDataSuiteController
             // Set analyzed fields
             $query = $this->queryManager->setAnalyzedFields($query);
 
+            // Set word joiner match
+            $query = $this->queryManager->setWordJoinerMatch($query);
+
             // Add fuzziness
             $query = $this->queryManager->addFuzziness($query);
 

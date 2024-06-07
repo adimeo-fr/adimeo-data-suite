@@ -134,6 +134,33 @@ class Query
         return $query;
     }
 
+    public function setWordJoinerMatch($query)
+    {
+        $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
+
+        $query['query']['bool']['must'][0]['bool']['should'][] = [
+            'match' => [
+                'label' => [
+                    'query' => $keyword,
+                    'boost' => 5000,
+                    'analyzer' => 'shingle_no_space'
+                ]
+            ]
+        ];
+
+        $query['query']['bool']['must'][0]['bool']['should'][] = [
+            'match' => [
+                'brand_analyzed_french' => [
+                    'query' => $keyword,
+                    'boost' => 5000,
+                    'analyzer' => 'shingle_no_space'
+                ]
+            ]
+        ];
+
+        return $query;
+    }
+
     public function addMinimumShouldMatch($query)
     {
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
