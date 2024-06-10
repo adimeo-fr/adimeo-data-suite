@@ -948,9 +948,6 @@ class SearchAPIController extends AdimeoDataSuiteController
             // Set analyzed fields
             $query = $this->queryManager->setAnalyzedFields($query);
 
-            // Set word joiner match
-            $query = $this->queryManager->setWordJoinerMatch($query);
-
             // Add fuzziness
             $query = $this->queryManager->addFuzziness($query);
 
@@ -962,6 +959,9 @@ class SearchAPIController extends AdimeoDataSuiteController
         }
 
         if (in_array($index_name, ['pdb_product', 'product', 'products', 'products1'])) {
+            // Set word joiner match
+            $query = $this->queryManager->setWordJoinerMatch($query);
+
             // Set sort and pinned documents
             $query = $this->queryManager->setFunctionScore($query);
         }
