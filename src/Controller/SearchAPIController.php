@@ -960,7 +960,7 @@ class SearchAPIController extends AdimeoDataSuiteController
 
         if (in_array($index_name, ['pdb_product', 'product', 'products', 'products1'])) {
             // Set word joiner match
-            $query = $this->queryManager->setWordJoinerMatch($query);
+            //$query = $this->queryManager->setWordJoinerMatch($query);
 
             // Set sort and pinned documents
             $query = $this->queryManager->setFunctionScore($query);
