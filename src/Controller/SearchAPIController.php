@@ -543,7 +543,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 }
 
                 if (in_array($indexName, ['pdb_store', 'pdb_editorial_content', 'pdb_product', 'product', 'products', 'products1']) && intval($query_string) === 0 && $query_string != '*') {
-                    $query = $this->finalizeQuery($query, $store_uid, $indexName, $query_string);
+                    $query = $this->finalizeQuery($query, $store_uid, $indexName, $query_string, $request->get('all'));
                 }
 
                 try {
@@ -939,7 +939,7 @@ class SearchAPIController extends AdimeoDataSuiteController
         }
     }
 
-    private function finalizeQuery($query, $store_uid, $index_name, $query_string)
+    private function finalizeQuery($query, $store_uid, $index_name, $query_string, $all = 0)
     {
         if (!str_contains($query_string, 'category_id')) {
             // Remove stop words
@@ -954,8 +954,10 @@ class SearchAPIController extends AdimeoDataSuiteController
             // Add fuzziness
             $query = $this->queryManager->addFuzziness($query);
 
-            // Add minimum should match property
-            $query = $this->queryManager->addMinimumShouldMatch($query);
+            if ($all == 0) {
+                // Add minimum should match property
+                $query = $this->queryManager->addMinimumShouldMatch($query);
+            }
         }
 
         if (in_array($index_name, ['pdb_product', 'product', 'products', 'products1'])) {
