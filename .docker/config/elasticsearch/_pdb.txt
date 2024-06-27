@@ -26,7 +26,6 @@ colle,colles,fixation,colles
 ciseaux,ciseaux,cisailles
 pointes,pointes,clous
 raccords,raccords,colliers
-cordons,cordons,connectiques
 mosaique,mosaique,crédence
 galets,galets,credence
 dégraissant,dégraissant,détergent
@@ -94,7 +93,6 @@ cuve,cuve,bétonniere
 malaxage,malaxage,bétonnière
 m48,m48,montants
 silicone,silicone,joint 
-ro2v,ro2v,cable
 croma,croma,douche,anticalcaire
 icta,icta,gaine
 plaque plâtre,plaque plâtre,panneau spécial,ba13,ba 13
@@ -552,3 +550,4 @@ toilettes,wc,chiotte
 adhésif,scotch
 caisse outils,caisses outils,boite outils,bte outils,sac outils,sacs outils
 kitchenette,kitchenettes,cuisinettes,cuisinette
+cable => cordon
