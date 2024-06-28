@@ -74,6 +74,7 @@ class Query
         $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
             'label^100',
             'label.1term^200',
+            'label_term_1^200',
             'label_term_2^100',
             'label_term_3^50',
             'label_term_4^50',
@@ -89,6 +90,7 @@ class Query
         $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
             'label^100',
             'label.1term^200',
+            'label_term_1^200',
             'label_term_2^100',
             'label_term_3^50',
             'label_term_4^50',
