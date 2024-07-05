@@ -18,15 +18,15 @@ class SearchAPIController extends AdimeoDataSuiteController
 
     private $applyBoostingByDefault;
     private $collectStats;
-    private $env;
+    private $log;
     private Query $queryManager;
 
-    public function __construct(Query $queryManager, $applyBoostingByDefault = false, $collectStats = false, $env = 'dev')
+    public function __construct(Query $queryManager, $applyBoostingByDefault = false, $collectStats = false, $log = 0)
     {
         $this->applyBoostingByDefault = $applyBoostingByDefault;
         $this->collectStats = $collectStats;
         $this->queryManager = $queryManager;
-        $this->env = $env;
+        $this->log = $log;
     }
 
     public function searchAPIV2Action(Request $request)
@@ -921,11 +921,11 @@ class SearchAPIController extends AdimeoDataSuiteController
     {
         ini_set('always_populate_raw_post_data', -1);
         try {
-            if ($this->env !== 'prod') {
+            if ($this->log == 1) {
                 $this->queryManager->addLog('custom.log', 'QUERY', print_r($request->getContent(), true), true);
             }
             $res = $this->getIndexManager()->search($request->get('index'), json_decode($request->getContent(), TRUE), $request->get('from') != null ? $request->get('from') : 0, $request->get('size') !== false ? $request->get('size') : 20, $request->get('type'));
-            if ($this->env !== 'prod') {
+            if ($this->log == 1) {
                 $this->queryManager->addLog('custom.log', 'RESULT', print_r(json_encode($res), true), true);
             }
             return new Response(json_encode($res), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type, Pragma, If-Modified-Since, Cache-Control'));
