@@ -216,6 +216,9 @@ user-prefs:
 search-api-v2:
   path: /search-api/v2
   controller: App\Controller\SearchAPIController::searchAPIV2Action
+search-api-index-products:
+  path: /search-api/v2/index-products
+  controller: App\Controller\SearchAPIController::indexProducts
 search-api-mor-like-this:
   path: /search-api/v2/more-like-this
   controller: App\Controller\SearchAPIController::seeMoreLikeThisAction
