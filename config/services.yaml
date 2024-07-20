@@ -138,7 +138,7 @@ services:
 
   App\Controller\SearchAPIController:
 
-    arguments: ["@app.query_manager", "%env(ADS_API_APPLY_BOOSTING)%", "%env(COLLECT_STATS)%"]
+    arguments: ["@app.query_manager", "%env(ADS_API_APPLY_BOOSTING)%", "%env(COLLECT_STATS)%", "%env(APP_LOG)%"]
 
   App\Controller\RecommandationController:
 

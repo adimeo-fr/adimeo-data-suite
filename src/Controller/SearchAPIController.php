@@ -18,14 +18,15 @@ class SearchAPIController extends AdimeoDataSuiteController
 
     private $applyBoostingByDefault;
     private $collectStats;
-
+    private $log;
     private Query $queryManager;
 
-    public function __construct(Query $queryManager, $applyBoostingByDefault = false, $collectStats = false)
+    public function __construct(Query $queryManager, $applyBoostingByDefault = false, $collectStats = false, $log = 0)
     {
         $this->applyBoostingByDefault = $applyBoostingByDefault;
         $this->collectStats = $collectStats;
         $this->queryManager = $queryManager;
+        $this->log = $log;
     }
 
     public function searchAPIV2Action(Request $request)
@@ -920,9 +921,13 @@ class SearchAPIController extends AdimeoDataSuiteController
     {
         ini_set('always_populate_raw_post_data', -1);
         try {
-            $this->queryManager->addLog('custom.log', 'QUERY', print_r($request->getContent(), true), true);
+            if ($this->log == 1) {
+                $this->queryManager->addLog('custom.log', 'QUERY', print_r($request->getContent(), true), true);
+            }
             $res = $this->getIndexManager()->search($request->get('index'), json_decode($request->getContent(), TRUE), $request->get('from') != null ? $request->get('from') : 0, $request->get('size') !== false ? $request->get('size') : 20, $request->get('type'));
-            $this->queryManager->addLog('custom.log', 'RESULT', print_r(json_encode($res), true), true);
+            if ($this->log == 1) {
+                $this->queryManager->addLog('custom.log', 'RESULT', print_r(json_encode($res), true), true);
+            }
             return new Response(json_encode($res), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type, Pragma, If-Modified-Since, Cache-Control'));
         } catch (\Exception $ex) {
             return new Response(json_encode(array('error' => $ex->getMessage())), 200, array('Content-Type' => 'application/json; charset=utf-8'));
@@ -937,6 +942,20 @@ class SearchAPIController extends AdimeoDataSuiteController
         } catch (\Exception $ex) {
             return new Response(json_encode(array('error' => $ex->getMessage())), 200, array('Content-Type' => 'application/json; charset=utf-8'));
         }
+    }
+
+    public function indexProducts(Request $request)
+    {
+        $products = $request->query->get('products');
+        $stores = implode(',', [
+            87, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32,
+            33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
+            61, 62, 63, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 96
+        ]);
+
+        exec(dirname(__FILE__) . '/../../bin/pdb_index_stores_products ' . $stores . ' ' . $products . ' &> /dev/null &', $output);
+
+        return new Response(json_encode(['success' => true]), 200, array('Content-Type' => 'application/json; charset=utf-8', 'Access-Control-Allow-Origin' => '*', 'Access-Control-Allow-Headers' => 'Content-Type, Pragma, If-Modified-Since, Cache-Control'));
     }
 
     private function finalizeQuery($query, $store_uid, $index_name, $query_string)
