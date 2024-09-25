@@ -176,15 +176,6 @@ class Query
             }
         }
 
-        $array['query']['function_score']['functions'][] = [
-            'script_score' => [
-                'script' => [
-                    'source' => 'def queryTerm = \'' . $term . '\'; def indexedTerm = doc[\'label.raw\'].value.replace(\' \', \'\'); if (queryTerm == indexedTerm) { return _score + 1; } else { return _score; }',
-                    'params' => ['queryTerm' => $keyword]
-                ]
-            ]
-        ];
-
         $array['query']['function_score']['score_mode'] = 'sum';
         $array['query']['function_score']['boost_mode'] = 'replace';
 
