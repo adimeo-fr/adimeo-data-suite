@@ -516,7 +516,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 if ($request->get('suggest') != null) {
                     $suggest_fields = array_map('trim', explode(',', $request->get('suggest')));
                     foreach ($suggest_fields as $i => $field) {
-                        $text = substr($query_string, 0, 99);
+                        $text = $this->queryManager->removeCharacters(substr($query_string, 0, 99));
                         switch($field) {
                             case 'phrase_suggest':
                                 $query['suggest']['phrase_suggest'] = array(
