@@ -548,7 +548,13 @@ class SearchAPIController extends AdimeoDataSuiteController
                 }
 
                 if (intval($query_string) > 0) {
-                    unset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['analyzer']);
+                    foreach ($query['query']['bool']['filter'][0]['bool']['must_not'] as $key => $term) {
+                        if (isset($term['term']['is_base']) && $term['term']['is_base'] == 1) {
+                           unset($query['query']['bool']['filter'][0]['bool']['must_not'][$key]);
+                        }
+                    }
+
+                    $query['query']['bool']['filter'][0]['bool']['must_not'] = array_values($query['query']['bool']['filter'][0]['bool']['must_not']);
                 }
 
                 try {
