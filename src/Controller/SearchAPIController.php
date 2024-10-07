@@ -569,6 +569,16 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query = $this->finalizeQuery($query, $store_uid, $indexName, $query_string);
                 }
 
+                if (intval($query_string) > 0) {
+                    foreach ($query['query']['bool']['filter'][0]['bool']['must_not'] as $key => $term) {
+                        if (isset($term['term']['is_base']) && $term['term']['is_base'] == 1) {
+                           unset($query['query']['bool']['filter'][0]['bool']['must_not'][$key]);
+                        }
+                    }
+
+                    $query['query']['bool']['filter'][0]['bool']['must_not'] = array_values($query['query']['bool']['filter'][0]['bool']['must_not']);
+                }
+
                 try {
                     $res = $this->getIndexManager()->search($indexName, $query, $request->get('from') != null ? $request->get('from') : 0, $request->get('size') != null ? $request->get('size') : 10, $mappingName);
 
