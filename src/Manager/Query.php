@@ -27,7 +27,7 @@ class Query
 
         $clean_str = implode(' ', $filtered_words);
         $clean_str = $this->removeAccents(strtolower(str_replace('  ', ' ', $clean_str)));
-        $clean_str = str_replace('\'', '', $clean_str);
+        $clean_str = $this->removeCharacters($clean_str);
 
         if (isset($query['query']['bool']['must'][0]['query_string'])) {
             $query['query']['bool']['must'][0]['query_string']['query'] = $clean_str;
@@ -199,6 +199,12 @@ class Query
     {
         $file = $this->params->get('log.folder') . '/' . $filename;
         file_put_contents($file, $section . ':' . $data . "\n", $append ? FILE_APPEND : 0);
+    }
+
+    public function removeCharacters($text)
+    {
+        $text = str_replace('\'', '', $text);
+        return str_replace('\-', ' ', $text);
     }
 
     private function retrieveKeywordFromQuery($query, $replace = false, $property = 'query_string')
