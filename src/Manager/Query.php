@@ -100,11 +100,15 @@ class Query
                 $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['fields'] = [
                     'label^100',
                     'label.1term^200',
-                    'label.3term^150',
-                    'label_term_1^50',
-                    'label_term_2^50',
+                    'label_term_1^200',
+                    'label_term_2^100',
                     'label_term_3^50',
-                    'brand_analyzed_french^200'
+                    'label_term_4^50',
+                    'brand_analyzed_french^50',
+                    'range_label^30',
+                    'category^20',
+                    'family^10',
+                    'domain^10'
                 ];
                 $query['query']['bool']['must'][0]['bool']['should'][0]['simple_query_string']['boost'] = 100;
 
@@ -112,11 +116,15 @@ class Query
                 $query['query']['bool']['must'][0]['bool']['should'][1]['simple_query_string']['fields'] = [
                     'label^100',
                     'label.1term^200',
-                    'label.3term^150',
-                    'label_term_1^50',
-                    'label_term_2^50',
+                    'label_term_1^200',
+                    'label_term_2^100',
                     'label_term_3^50',
-                    'brand_analyzed_french^200'
+                    'label_term_4^50',
+                    'brand_analyzed_french^50',
+                    'range_label^30',
+                    'category^20',
+                    'family^10',
+                    'domain^10'
                 ];
 
                 $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
