@@ -13,6 +13,29 @@ class Query
         $this->params = $params;
     }
 
+    public function replaceQuery($query)
+    {
+        $keyword = $this->retrieveKeywordFromQuery($query);
+        $this->addLog('search.log', 'KEYWORD BEFORE REPLACE', $keyword, true);
+
+        $matches = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'matches.json'), true);
+
+        $search = array_search($keyword, array_column($matches, 'query'));
+
+        if ($search !== false) {
+            if (isset($query['query']['bool']['must'][0]['query_string'])) {
+                $query['query']['bool']['must'][0]['query_string']['query'] = $matches[$search]['match'];
+            } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
+                $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = $matches[$search]['match'];
+            }
+        }
+
+        $keyword = $this->retrieveKeywordFromQuery($query);
+        $this->addLog('search.log', 'KEYWORD AFTER REPLACE', $keyword, true);
+
+        return $query;
+    }
+
     public function removeStopWords($query)
     {
         $keyword = $this->retrieveKeywordFromQuery($query);
@@ -156,7 +179,6 @@ class Query
     public function setFunctionScore($query, $storeUid)
     {
         $keyword = $this->retrieveKeywordFromQuery($query, true, 'simple_query_string');
-        $term = preg_replace('/\s+(?=.*[a-zA-Z])(?=.*[0-9])/', '', $keyword);
         $ids = $this->setPinnedDocuments($keyword, $storeUid);
 
         $array = [];

@@ -1,0 +1,22 @@
+[
+  {
+    "query": "ba 13",
+    "match": "ba13"
+  },
+  {
+    "query": "ba 10",
+    "match": "ba10"
+  },
+  {
+    "query": "ba 15",
+    "match": "ba15"
+  },
+  {
+    "query": "ba 18",
+    "match": "ba18"
+  },
+  {
+    "query": "gr32",
+    "match": "gr 32"
+  }
+]
