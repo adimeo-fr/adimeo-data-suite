@@ -516,7 +516,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                 if ($request->get('suggest') != null) {
                     $suggest_fields = array_map('trim', explode(',', $request->get('suggest')));
                     foreach ($suggest_fields as $i => $field) {
-                        $text = $this->queryManager->removeCharacters(substr($query_string, 0, 99));
+                        $text = $this->queryManager->findQueryMatch($this->queryManager->removeCharacters(substr($query_string, 0, 99)));
                         switch($field) {
                             case 'phrase_suggest':
                                 $query['suggest']['phrase_suggest'] = array(
@@ -994,7 +994,7 @@ class SearchAPIController extends AdimeoDataSuiteController
     {
         if (!str_contains($query_string, 'category_id')) {
             // Replace queries
-            $query = $this->queryManager->replaceQuery($query);
+            $query = $this->queryManager->replaceQueryMatch($query);
 
             // Remove stop words
             $query = $this->queryManager->removeStopWords($query);

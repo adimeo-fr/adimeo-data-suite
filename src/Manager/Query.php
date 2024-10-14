@@ -13,9 +13,8 @@ class Query
         $this->params = $params;
     }
 
-    public function replaceQuery($query)
+    public function findQueryMatch($keyword)
     {
-        $keyword = $this->retrieveKeywordFromQuery($query);
         $this->addLog('search.log', 'KEYWORD BEFORE REPLACE', $keyword, true);
 
         $matches = json_decode(file_get_contents($this->params->get('data.folder') . DIRECTORY_SEPARATOR . 'matches.json'), true);
@@ -23,15 +22,24 @@ class Query
         $search = array_search($keyword, array_column($matches, 'query'));
 
         if ($search !== false) {
-            if (isset($query['query']['bool']['must'][0]['query_string'])) {
-                $query['query']['bool']['must'][0]['query_string']['query'] = $matches[$search]['match'];
-            } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
-                $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = $matches[$search]['match'];
-            }
+            $this->addLog('search.log', 'KEYWORD AFTER REPLACE', $matches[$search]['match'], true);
+            return $matches[$search]['match'];
         }
 
-        $keyword = $this->retrieveKeywordFromQuery($query);
         $this->addLog('search.log', 'KEYWORD AFTER REPLACE', $keyword, true);
+        return $keyword;
+    }
+
+    public function replaceQueryMatch($query)
+    {
+        $keyword = $this->retrieveKeywordFromQuery($query);
+        $match = $this->findQueryMatch($keyword);
+
+        if (isset($query['query']['bool']['must'][0]['query_string'])) {
+            $query['query']['bool']['must'][0]['query_string']['query'] = $match;
+        } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
+            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = $match;
+        }
 
         return $query;
     }
