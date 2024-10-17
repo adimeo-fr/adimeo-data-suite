@@ -16,7 +16,35 @@
     "match": "ba18"
   },
   {
+    "query": "ba 25",
+    "match": "ba25"
+  },
+  {
     "query": "gr32",
     "match": "gr 32"
+  },
+  {
+    "query": "weber col",
+    "match": "webercol"
+  },
+  {
+    "query": "werber fix",
+    "match": "werberfix"
+  },
+  {
+    "query": "r 36",
+    "match": "r36"
+  },
+  {
+    "query": "r 70",
+    "match": "r70"
+  },
+  {
+    "query": "r 90",
+    "match": "r90"
+  },
+  {
+    "query": "pb38",
+    "match": "pb 38"
   }
 ]
