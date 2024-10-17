@@ -28,8 +28,8 @@
     "match": "webercol"
   },
   {
-    "query": "werber fix",
-    "match": "werberfix"
+    "query": "weber fix",
+    "match": "weberfix"
   },
   {
     "query": "r 36",
