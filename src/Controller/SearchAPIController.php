@@ -569,7 +569,7 @@ class SearchAPIController extends AdimeoDataSuiteController
                     $query = $this->finalizeQuery($query, $store_uid, $indexName, $query_string);
                 }
 
-                if (intval($query_string) > 0) {
+                if (isset($query['query']['bool']['filter'][0]['bool']['must_not']) && intval($query_string) > 0) {
                     foreach ($query['query']['bool']['filter'][0]['bool']['must_not'] as $key => $term) {
                         if (isset($term['term']['is_base']) && $term['term']['is_base'] == 1) {
                            unset($query['query']['bool']['filter'][0]['bool']['must_not'][$key]);
