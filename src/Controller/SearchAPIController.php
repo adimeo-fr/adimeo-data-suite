@@ -993,9 +993,6 @@ class SearchAPIController extends AdimeoDataSuiteController
     private function finalizeQuery($query, $store_uid, $index_name, $query_string)
     {
         if (!str_contains($query_string, 'category_id')) {
-            // Replace queries
-            $query = $this->queryManager->replaceQueryMatch($query);
-
             // Remove stop words
             $query = $this->queryManager->removeStopWords($query);
 

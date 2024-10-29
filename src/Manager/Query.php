@@ -30,20 +30,6 @@ class Query
         return $keyword;
     }
 
-    public function replaceQueryMatch($query)
-    {
-        $keyword = $this->retrieveKeywordFromQuery($query);
-        $match = $this->findQueryMatch($keyword);
-
-        if (isset($query['query']['bool']['must'][0]['query_string'])) {
-            $query['query']['bool']['must'][0]['query_string']['query'] = $match;
-        } elseif (isset($query['query']['bool']['must'][0]['bool']['must'][0]['query_string'])) {
-            $query['query']['bool']['must'][0]['bool']['must'][0]['query_string']['query'] = $match;
-        }
-
-        return $query;
-    }
-
     public function removeStopWords($query)
     {
         $keyword = $this->retrieveKeywordFromQuery($query);
